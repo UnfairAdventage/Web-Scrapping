@@ -1,10 +1,73 @@
-version: "3.8"
+version: '3.8'
+
 services:
-  peliculas:
-    build: .
-    container_name: peliculas
+  anxerstudios-streaming:
+    image: zlosttk/anxerstudios-streaming:latest
+    container_name: anxerstudios-streaming
+    hostname: anxerstudios-streaming
+    
+    # Configuración de recursos
+    cpu_shares: 90
+    deploy:
+      resources:
+        limits:
+          memory: 3369M
+    
+    # Variables de entorno
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - TZ=America/Bogota
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+    
+    # Configuración de red
     ports:
       - "1234:1234"
+    
+    # Configuración de volúmenes
+    volumes:
+      - /DATA/AppData/anxerstudios-streaming/app/config:/app/config
+      - /DATA/AppData/anxerstudios-streaming/logs:/app/logs
+    
+    # Configuración de reinicio y salud
     restart: unless-stopped
-    # volumes:
-    #   - ./data:/app/data  # Descomenta si necesitas persistencia 
+    
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:1234/api/secciones || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Configuración de red
+    networks:
+      - anxerstudios-streaming
+    
+    # Etiquetas para CasaOS
+    labels:
+      - "icon=https://icon.casaos.io/main/all/anxerstudios-streaming.png"
+      - "casaos.description=AnxerStudios Streaming - Plataforma de streaming de películas y series"
+      - "casaos.category=Entertainment"
+
+networks:
+  anxerstudios-streaming:
+    name: anxerstudios-streaming
+    driver: bridge
+
+# Configuración específica para CasaOS
+x-casaos:
+  author: ZLostTK
+  category: Entertainment
+  hostname: linuxlite.local
+  icon: https://icon.casaos.io/main/all/anxerstudios-streaming.png
+  index: /
+  is_uncontrolled: false
+  port_map: "1234"
+  scheme: http
+  store_app_id: anxerstudios-streaming
+  title:
+    custom: "AnxerStudios Streaming"
+    en_us: "AnxerStudios Streaming"
+  description:
+    en_us: "Plataforma de streaming para películas, series y anime con interfaz React y backend Flask"

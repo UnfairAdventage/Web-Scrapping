@@ -9,7 +9,43 @@ interface VideoModalProps {
   title: string;
 }
 
+const isExternalPlayer = (url: string) => {
+  try {
+    const u = new URL(url);
+    return !u.hostname.includes('sololatino.net');
+  } catch {
+    return false;
+  }
+};
+
 const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, title }) => {
+  if (!isOpen) return null;
+
+  // Si el videoUrl es externo, úsalo directamente
+  if (isExternalPlayer(videoUrl)) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
+        <div className="bg-gray-900 rounded-lg shadow-lg p-4 max-w-3xl w-full relative">
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-gray-400 hover:text-white"
+          >
+            ×
+          </button>
+          <h2 className="text-xl font-bold text-white mb-4">{title}</h2>
+          <div className="aspect-w-16 aspect-h-9">
+            <iframe
+              src={videoUrl}
+              title={title}
+              allowFullScreen
+              className="w-full h-96 rounded-lg border-0"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { data: playerData, isLoading, error } = usePlayerData(videoUrl);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 

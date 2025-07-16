@@ -244,26 +244,7 @@ export const useSeriesData = (slug: string) => {
 export const useMoviePlayer = (slug: string, type?: 'movie' | 'anime' | 'series') => {
   return useQuery({
     queryKey: ['movie-player', slug, type],
-    queryFn: async () => {
-      if (!slug) throw new Error('No slug provided');
-      let url = '';
-      if (type === 'anime') {
-        url = `${API_BASE_URL}/anime/${slug}`;
-      } else {
-        url = `${API_BASE_URL}/pelicula/${slug}`;
-      }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Failed to fetch movie/anime player');
-      }
-      const data = await response.json();
-      const player = data.player || data;
-      return {
-        player_url: player.player_url,
-        source: player.source,
-        format: player.format
-      };
-    },
+    queryFn: () => api.getMoviePlayer(slug),
     enabled: !!slug,
     staleTime: 15 * 60 * 1000, // 15 minutes
   });

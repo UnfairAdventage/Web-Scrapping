@@ -13,6 +13,9 @@ from extractors.iframe_extractor import extract_iframe_player
 
 app = Flask(__name__)
 CORS(app)
+# Desactivar cache de archivos estáticos en desarrollo
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['ETAG_DISABLED'] = True
 
 SECCIONES = {s['nombre']: s['url'] for s in TARGET_URLS}
 SECCIONES_LIST = list(SECCIONES.keys())
@@ -130,38 +133,61 @@ def api_ver_serie(slug):
 @app.route('/api/pelicula/<slug>', methods=['GET'])
 def api_ver_pelicula(slug):
     url = None
-    # Buscar primero en películas
+    found_in = None
+    # Buscar primero en películas (normalizando el nombre)
     for s in TARGET_URLS:
-        if s['nombre'].lower() == 'peliculas':
+        if normaliza(s['nombre']) == 'peliculas':
             url = f"{s['url']}/{slug}"
             break
+    print(f"[DEBUG] Buscando en Películas: {url}")
     player = extract_iframe_player(url) if url else None
     info = {"sinopsis": "", "titulo": ""}
     if url:
         import requests
-        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
+        print(f"[DEBUG] Status code de requests.get (Películas): {resp.status_code}")
         if resp.ok:
+            print(f"[DEBUG] HTML descargado (primeros 500 chars, Películas):\n{resp.text[:500]}")
             extra = extract_sinopsis_titulo(resp.text)
+            print(f"[DEBUG] Título extraído (Películas): {extra.get('titulo')}")
+            print(f"[DEBUG] Sinopsis extraída (Películas): {extra.get('sinopsis')}")
             info["sinopsis"] = extra.get("sinopsis", "")
             info["titulo"] = extra.get("titulo", "")
-    # Si no hay player, intentar en películas de anime
+    if player:
+        found_in = "peliculas"
+    # Si no hay player, intentar en películas de anime (normalizando el nombre)
     if not player:
         for s in TARGET_URLS:
-            if s['nombre'].lower() == 'peliculas de anime':
+            if normaliza(s['nombre']) == 'peliculas de anime':
                 url = f"{s['url']}/{slug}"
+                print(f"[DEBUG] Buscando en Peliculas de Anime: {url}")
                 player = extract_iframe_player(url)
                 if url:
                     import requests
-                    resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+                    resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
+                    print(f"[DEBUG] Status code de requests.get (Peliculas de Anime): {resp.status_code}")
                     if resp.ok:
+                        print(f"[DEBUG] HTML descargado (primeros 500 chars, Peliculas de Anime):\n{resp.text[:500]}")
                         extra = extract_sinopsis_titulo(resp.text)
+                        print(f"[DEBUG] Título extraído (Peliculas de Anime): {extra.get('titulo')}")
+                        print(f"[DEBUG] Sinopsis extraída (Peliculas de Anime): {extra.get('sinopsis')}")
                         info["sinopsis"] = extra.get("sinopsis", "")
                         info["titulo"] = extra.get("titulo", "")
                 if player:
+                    found_in = "peliculas de anime"
                     break
     if not player:
-        return jsonify({"error": "Película o película de anime no encontrada"}), 404
-    return jsonify({"slug": slug, "player": player, "url": url, "info": info})
+        print(f"[ERROR] No se encontró reproductor para {slug} en ninguna sección")
+        return jsonify({"error": "Película no encontrada en películas ni en películas de anime"}), 404
+    # Normalizar los campos del player para el frontend
+    player = {
+        "player_url": player.get("player_url"),
+        "source": player.get("fuente"),
+        "format": player.get("formato")
+    }
+    print(f"[DEBUG] Encontrado en: {found_in}")
+    print(f"[DEBUG] Respuesta final: slug={slug}, player={player}, url={url}, info={info}, found_in={found_in}")
+    return jsonify({"slug": slug, "player": player, "url": url, "info": info, "found_in": found_in})
 
 @app.route('/api/anime/<slug>', methods=['GET'])
 def api_ver_anime(slug):

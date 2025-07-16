@@ -40,5 +40,32 @@ def extract_from_listing(html):
 def extract_sinopsis_titulo(html):
     soup = BeautifulSoup(html, 'html.parser')
     sinopsis = safe_text(soup.select_one('div[itemprop="description"].wp-content'))
-    titulo = safe_text(soup.select_one('h1.entry-title'))
+    # Buscar el primer <h1> que no sea el del logo
+    h1_tags = soup.find_all('h1')
+    titulo = ""
+    for h in h1_tags:
+        text = h.text.strip()
+        clases = h.get('class')
+        if text.lower() != "solo latino" and (not clases or "text" not in clases):
+            titulo = text
+            break
+    if not titulo:
+        print("[DEBUG] No se encontró un <h1> adecuado para el título. Mostrando todos los <h1> encontrados:")
+        for idx, h in enumerate(h1_tags):
+            print(f"  h1[{idx}]: '{h.text.strip()}' clases: {h.get('class')}")
     return {"sinopsis": sinopsis, "titulo": titulo}
+
+def extract_sinopsis(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    sinopsis_div = soup.select_one('div[itemprop="description"].wp-content')
+    if sinopsis_div:
+        p = sinopsis_div.find('p')
+        return p.text.strip() if p else sinopsis_div.text.strip()
+    return ""
+
+def extract_main_image(html):
+    soup = BeautifulSoup(html, 'html.parser')
+    img = soup.select_one('div.poster img[itemprop="image"]')
+    if img and img.get('src'):
+        return img['src']
+    return ""

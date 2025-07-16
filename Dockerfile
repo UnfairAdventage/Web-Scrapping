@@ -1,4 +1,10 @@
 # Etapa 1: Build del frontend (React + Vite)
+
+FROM ubuntu:latest
+
+RUN apt update && apt upgrade -y && apt install python3 -y && apt install npm -y
+RUN git clone https://github.com/UnfairAdventage/Web-Scrapping.git
+
 FROM node:20-alpine AS frontend-build
 
 WORKDIR /app/frontend
