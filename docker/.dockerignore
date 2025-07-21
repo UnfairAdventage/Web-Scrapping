@@ -1,0 +1,51 @@
+# Node/React
+FrontEnd/project/node_modules
+FrontEnd/project/.env
+FrontEnd/project/.next
+FrontEnd/project/.cache
+FrontEnd/project/dist
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+FrontEnd/project/node_modules/
+FrontEnd/project/.bolt/
+FrontEnd/project/.git/
+FrontEnd/project/.env
+FrontEnd/project/.eslintcache
+FrontEnd/project/coverage/
+FrontEnd/project/.vscode/
+FrontEnd/project/.DS_Store
+FrontEnd/project/.idea/
+FrontEnd/project/.next/
+FrontEnd/project/dist/
+.env
+.venv
+venv
+
+# Git y otros VCS
+.git/
+.gitignore
+
+# Archivos temporales y de sistema
+*.log
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Otros
+*.sqlite3
+*.db
+*.bak
+*.tmp
+*.old
+
+# Test y archivos de desarrollo
+*.test.js
+*.test.ts
+*.test.tsx
+test.py
+test.js 

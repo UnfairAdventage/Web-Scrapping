@@ -4,9 +4,9 @@ sys.path.append('./Proyecto')
 
 from pydoll.browser import Chrome
 from pydoll.constants import By
-from extractors.iframe_extractor import extract_iframe_player
-from extractors.generic_extractor import extract_sinopsis_titulo
-from utils.http_client import fetch_html
+from backend.extractors.iframe_extractor import extract_iframe_player
+from backend.extractors.generic_extractor import extract_sinopsis_titulo
+from backend.utils.http_client import fetch_html
 
 MOVIES = [
     {

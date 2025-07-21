@@ -6,10 +6,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from config import TARGET_URLS
-from utils.http_client import fetch_html
-from extractors.generic_extractor import extraer_listado, extraer_info_pelicula
-from extractors.serie_extractor import extraer_episodios_serie
-from extractors.iframe_extractor import extraer_iframe_reproductor
+from backend.utils.http_client import fetch_html
+from backend.extractors.generic_extractor import extraer_listado, extraer_info_pelicula
+from backend.extractors.serie_extractor import extraer_episodios_serie
+from backend.extractors.iframe_extractor import extraer_iframe_reproductor
 
 app = Flask(__name__)
 CORS(app)

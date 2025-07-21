@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   anxerstudios-streaming:
-    image: zlosttk/anxerstudios-streaming:latest
+    image: zlosttk/anxerstudios-streaming:v1.1.0
     container_name: anxerstudios-streaming
     hostname: anxerstudios-streaming
     

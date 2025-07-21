@@ -47,15 +47,28 @@ services:
 
 ```
 peliculas/
-└── Proyecto/
-    ├── app.py
-    ├── requirements.txt
-    ├── Dockerfile
-    ├── ...
-    ├── FrontEnd/
-    │   ├── project/  # Código fuente React
-    │   └── dist/     # Build generado por Vite
-    └── ...
+├── backend/
+│   ├── app.py
+│   ├── config.py
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── utils/
+│   └── extractors/
+├── frontend/
+│   ├── project/  # Código fuente React
+│   └── dist/     # Build generado por Vite
+├── docker/
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   └── .dockerignore
+├── scripts/
+│   └── deploy_casaos.ps1
+├── tests/
+│   ├── test.py
+│   └── test.js
+├── LICENSE
+├── README_CASAOS.md
+└── .gitignore
 ```
 
 ---

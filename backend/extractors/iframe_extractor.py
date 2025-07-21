@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from utils.adblocker import clean_html_ads
+from backend.utils.adblocker import clean_html_ads
 
 
 def extraer_iframe_reproductor(url):
