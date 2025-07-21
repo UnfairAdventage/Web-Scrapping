@@ -112,19 +112,23 @@ const api = {
     };
   },
 
-  getMoviePlayer: async (slug: string): Promise<PlayerData & { sinopsis?: string; tituloReal?: string }> => {
+  getMoviePlayer: async (slug: string): Promise<PlayerData & { sinopsis?: string; tituloReal?: string; fecha_estreno?: string; generos?: string[]; imagen_poster?: string }> => {
     const response = await fetch(`${API_BASE_URL}/pelicula/${slug}`);
     if (!response.ok) {
       throw new Error('Failed to fetch movie player');
     }
     const data = await response.json();
     const player = data.player || data;
+    // Adaptar a los nuevos campos del backend
     return {
       player_url: player.player_url,
       source: player.source,
       format: player.format,
       sinopsis: data.info?.sinopsis || '',
-      tituloReal: data.info?.titulo || ''
+      tituloReal: data.info?.titulo || '',
+      fecha_estreno: data.info?.fecha_estreno || '',
+      generos: data.info?.generos || [],
+      imagen_poster: data.info?.imagen_poster || ''
     };
   },
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { useSections } from '../hooks/useApi';
 
@@ -15,6 +15,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
   section,
   onSectionChange,
 }) => {
+  const [inputValue, setInputValue] = useState(search);
+
+  useEffect(() => {
+    setInputValue(search);
+  }, [search]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      onSearchChange(inputValue);
+    }, 400); // 400 ms debounce
+    return () => clearTimeout(handler);
+  }, [inputValue, onSearchChange]);
+
   const { data: sectionsData, isLoading: sectionsLoading } = useSections();
   
   // Map the sections from the API response
@@ -37,8 +50,8 @@ const FilterBar: React.FC<FilterBarProps> = ({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
           type="text"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder="Buscar películas y series..."
           className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />

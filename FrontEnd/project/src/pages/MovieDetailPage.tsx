@@ -1,80 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useCatalog, useMoviePlayer } from '../hooks/useApi';
+import { useMoviePlayer } from '../hooks/useApi';
 import VideoModal from '../components/VideoModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Play, ArrowLeft, Calendar, Globe, Users } from 'lucide-react';
-import { CatalogItem } from '../types';
 
 const MovieDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: playerData, isLoading, error } = useMoviePlayer(slug || '');
 
-  // For this demo, we'll get the movie from the catalog
-  // In a real app, you'd have a separate API endpoint for movie details
-  const { data: catalogData, isLoading, error } = useCatalog(1, '', '');
-  const { data: playerData } = useMoviePlayer(slug || '') as { data?: { player_url: string; source: string; format: string; sinopsis?: string; tituloReal?: string } };
-  const movie = catalogData?.items.find(item => item.slug === slug && item.type === 'movie');
-
-  // Buscar película por término representativo (tituloReal, alt, title, slug)
-  async function fetchMovieBySlugOrTitle(): Promise<CatalogItem | null> {
-    // Determinar el mejor término de búsqueda
-    const searchTerm = playerData?.tituloReal || movie?.alt || movie?.title || (slug ? slug.replace(/-/g, ' ') : '');
-    if (!searchTerm) return null;
-    let pagina = 1;
-    let encontrado = null;
-    let totalPaginas = 1;
-    while (!encontrado && pagina <= totalPaginas) {
-      const res = await fetch(`/api/listado?pagina=${pagina}&busqueda=${encodeURIComponent(searchTerm)}`);
-      const data = await res.json();
-      if (Array.isArray(data.resultados)) {
-        // Buscar por slug o por coincidencia de título
-        encontrado = data.resultados.find((item: CatalogItem) =>
-          item.slug === slug ||
-          item.title?.toLowerCase() === searchTerm.toLowerCase() ||
-          item.alt?.toLowerCase() === searchTerm.toLowerCase()
-        );
-      }
-      totalPaginas = data.total_paginas || 1;
-      pagina++;
-    }
-    return encontrado;
-  }
-
-  // Hook de imagen SIEMPRE antes de cualquier return
-  const [image, setImage] = useState<string>(movie?.image || '');
-  const [isFetchingAltImage, setIsFetchingAltImage] = useState(false);
-
-  useEffect(() => {
-    setImage(movie?.image || '');
-  }, [movie?.image, slug]);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!image && slug) {
-      setIsFetchingAltImage(true);
-      fetchMovieBySlugOrTitle()
-        .then(found => {
-          if (!cancelled && found && found.image) {
-            setImage(found.image);
-          }
-          setIsFetchingAltImage(false);
-        })
-        .catch(() => {
-          if (!cancelled) setIsFetchingAltImage(false);
-        });
-    }
-    return () => { cancelled = true; };
-  }, [image, slug, playerData?.tituloReal, movie?.alt, movie?.title]);
-
-  const sinopsis = playerData?.sinopsis || movie?.sinopsis ||
-    'Una emocionante película que te mantendrá entretenido de principio a fin. Disfruta de una experiencia cinematográfica única con excelente calidad de imagen y sonido.';
-
-  const handlePlayMovie = () => {
-    setIsModalOpen(true);
-  };
-
-  if (isLoading || isFetchingAltImage) {
+  if (isLoading || !playerData) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <LoadingSpinner size="lg" className="min-h-screen" />
@@ -82,7 +18,7 @@ const MovieDetailPage: React.FC = () => {
     );
   }
 
-  if (error || (!movie && !playerData)) {
+  if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
@@ -101,15 +37,15 @@ const MovieDetailPage: React.FC = () => {
     );
   }
 
-  // Usar datos de playerData si existen, si no, usar los del catálogo
-  const alt = movie?.alt || playerData?.tituloReal || '';
-  const year = movie?.year || '';
-  const language = movie?.language || 'Latino';
-  const genres = movie?.genres || '';
-
-  // Cambios aquí: priorizar playerData para título y sinopsis
-  const title = playerData?.tituloReal || movie?.tituloReal || movie?.title || '';
-  const videoUrl = playerData?.player_url || movie?.url || '';
+  // Extraer datos de playerData
+  const title = playerData.tituloReal || '';
+  const sinopsis = playerData.sinopsis || 'Una emocionante película que te mantendrá entretenido de principio a fin. Disfruta de una experiencia cinematográfica única con excelente calidad de imagen y sonido.';
+  const year = playerData.fecha_estreno || '';
+  const genres = Array.isArray(playerData.generos) && playerData.generos.length > 0 ? playerData.generos.join(', ') : '';
+  const language = 'Latino';
+  const poster = playerData.imagen_poster || '';
+  const alt = playerData.tituloReal || '';
+  const videoUrl = playerData.player_url || '';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -126,7 +62,7 @@ const MovieDetailPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         <div className="flex-shrink-0">
           <img
-            src={image}
+            src={poster}
             alt={alt}
             className="w-full lg:w-80 rounded-lg shadow-xl"
           />
@@ -156,7 +92,7 @@ const MovieDetailPage: React.FC = () => {
 
           <div className="flex flex-wrap gap-4">
             <button
-              onClick={handlePlayMovie}
+              onClick={() => setIsModalOpen(true)}
               className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               <Play className="h-5 w-5 mr-2" />

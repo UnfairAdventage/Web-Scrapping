@@ -48,8 +48,13 @@ const AnimeDetailPage: React.FC = () => {
 
   const { info, episodes } = animeData;
 
-  const tituloReal = info.tituloReal || info.title;
+  const tituloReal = info.tituloReal || info.titulo || info.title;
   const sinopsis = info.sinopsis || 'Disfruta de tu anime favorito en español latino.';
+  const year = info.fecha_estreno || info.year || '';
+  const genres = Array.isArray(info.generos) && info.generos.length > 0 ? info.generos.join(', ') : (info.genres || '');
+  const image = info.imagen_poster || info.image;
+  const alt = info.alt || '';
+  const language = info.language || 'Latino';
 
   // Agrupar episodios por temporada
   const episodesBySeason = episodes.reduce((acc, episode) => {
@@ -78,8 +83,8 @@ const AnimeDetailPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-8 mb-8">
         <div className="flex-shrink-0">
           <img
-            src={info.image}
-            alt={info.alt}
+            src={image}
+            alt={alt}
             className="w-full lg:w-80 rounded-lg shadow-xl"
           />
         </div>
@@ -89,15 +94,15 @@ const AnimeDetailPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-4 mb-4">
             <span className="flex items-center text-gray-400">
               <Calendar className="h-4 w-4 mr-1" />
-              {info.year}
+              {year}
             </span>
             <span className="flex items-center text-gray-400">
               <Globe className="h-4 w-4 mr-1" />
-              {info.language}
+              {language}
             </span>
             <span className="flex items-center text-gray-400">
               <Users className="h-4 w-4 mr-1" />
-              {info.genres}
+              {genres}
             </span>
           </div>
           <p className="text-gray-300 mb-6 leading-relaxed">

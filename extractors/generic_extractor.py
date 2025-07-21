@@ -1,71 +1,56 @@
 from bs4 import BeautifulSoup
-from utils.parser import safe_text
 
-def extract_from_listing(html):
+
+def extraer_listado(html):
     soup = BeautifulSoup(html, 'html.parser')
-    articles = soup.select('article.item')
-    data = []
-
-    for article in articles:
+    articulos = soup.select('article.item')
+    datos = []
+    for articulo in articulos:
         try:
-            card = article.select_one('.poster')
-            enlace = article.select_one('a')['href']
-            post_id = article.get('data-id', 'N/A')
+            poster = articulo.select_one('.poster')
+            enlace = articulo.select_one('a')['href']
+            id_post = articulo.get('data-id', 'N/A')
             slug = enlace.rstrip('/').split('/')[-1]
-            titulo = safe_text(card.select_one('h3'))
-            imagen = card.select_one('img').get('data-srcset', '')
-            alt = card.select_one('img').get('alt', '')
-            año = safe_text(card.select_one('.data p'))
-            generos = safe_text(card.select_one('.data span'))
-            idioma = 'Latino' if card.select_one('.audio .latino') else 'Otro'
-            tipo_contenido = 'pelicula' if 'movies' in article.get('class', []) else 'serie' if 'tvshows' in article.get('class', []) else 'Otro'
-
-            data.append({
-                "id": post_id,
+            titulo = poster.select_one('h3').text.strip() if poster.select_one('h3') else ''
+            imagen = poster.select_one('img').get('data-srcset', '')
+            alt = poster.select_one('img').get('alt', '')
+            anio = poster.select_one('.data p').text.strip() if poster.select_one('.data p') else ''
+            generos = poster.select_one('.data span').text.strip() if poster.select_one('.data span') else ''
+            idioma = 'Latino' if poster.select_one('.audio .latino') else 'Otro'
+            tipo = 'pelicula' if 'movies' in articulo.get('class', []) else 'serie' if 'tvshows' in articulo.get('class', []) else 'Otro'
+            datos.append({
+                "id": id_post,
                 "slug": slug,
                 "titulo": titulo,
                 "alt": alt,
                 "imagen": imagen,
-                "año": año,
+                "anio": anio,
                 "generos": generos,
                 "idioma": idioma,
                 "url": enlace,
-                "tipo": tipo_contenido
+                "tipo": tipo
             })
         except Exception as e:
             print(f"[ERROR] Falló al parsear un artículo: {e}")
-    
-    return data
+    return datos
 
-def extract_sinopsis_titulo(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    sinopsis = safe_text(soup.select_one('div[itemprop="description"].wp-content'))
-    # Buscar el primer <h1> que no sea el del logo
-    h1_tags = soup.find_all('h1')
-    titulo = ""
-    for h in h1_tags:
-        text = h.text.strip()
-        clases = h.get('class')
-        if text.lower() != "solo latino" and (not clases or "text" not in clases):
-            titulo = text
-            break
-    if not titulo:
-        print("[DEBUG] No se encontró un <h1> adecuado para el título. Mostrando todos los <h1> encontrados:")
-        for idx, h in enumerate(h1_tags):
-            print(f"  h1[{idx}]: '{h.text.strip()}' clases: {h.get('class')}")
-    return {"sinopsis": sinopsis, "titulo": titulo}
 
-def extract_sinopsis(html):
+def extraer_info_pelicula(html):
     soup = BeautifulSoup(html, 'html.parser')
-    sinopsis_div = soup.select_one('div[itemprop="description"].wp-content')
-    if sinopsis_div:
-        p = sinopsis_div.find('p')
-        return p.text.strip() if p else sinopsis_div.text.strip()
-    return ""
-
-def extract_main_image(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    img = soup.select_one('div.poster img[itemprop="image"]')
-    if img and img.get('src'):
-        return img['src']
-    return ""
+    titulo = soup.select_one('div.data h1')
+    titulo = titulo.text.strip() if titulo else 'No encontrado'
+    sinopsis_div = soup.find('div', itemprop='description')
+    sinopsis = sinopsis_div.find('p').text.strip() if sinopsis_div and sinopsis_div.find('p') else ''
+    fecha_estreno = soup.find('span', itemprop='dateCreated')
+    fecha_estreno = fecha_estreno.text.strip() if fecha_estreno else ''
+    generos_div = soup.find('div', class_='sgeneros')
+    generos = [a.text.strip() for a in generos_div.find_all('a')] if generos_div else []
+    poster_img = soup.select_one('div.poster img')
+    imagen_poster = poster_img['src'] if poster_img and poster_img.has_attr('src') else ''
+    return {
+        'titulo': titulo,
+        'sinopsis': sinopsis,
+        'fecha_estreno': fecha_estreno,
+        'generos': generos,
+        'imagen_poster': imagen_poster
+    }

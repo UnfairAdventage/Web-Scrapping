@@ -7,13 +7,12 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from config import TARGET_URLS
 from utils.http_client import fetch_html
-from extractors.generic_extractor import extract_from_listing, extract_sinopsis_titulo
-from extractors.serie_extractor import extract_episodios
-from extractors.iframe_extractor import extract_iframe_player
+from extractors.generic_extractor import extraer_listado, extraer_info_pelicula
+from extractors.serie_extractor import extraer_episodios_serie
+from extractors.iframe_extractor import extraer_iframe_reproductor
 
 app = Flask(__name__)
 CORS(app)
-# Desactivar cache de archivos estáticos en desarrollo
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['ETAG_DISABLED'] = True
 
@@ -43,12 +42,7 @@ def api_listado():
                 for k, v in data.items():
                     if isinstance(v, dict):
                         tipo_val = v.get("type", "").lower()
-                        if tipo_val == "pelicula":
-                            tipo = "movie"
-                        elif tipo_val == "serie":
-                            tipo = "series"
-                        else:
-                            tipo = "anime"
+                        tipo = "movie" if tipo_val == "pelicula" else "series" if tipo_val == "serie" else "anime"
                         items.append({
                             "id": k,
                             "slug": v.get("url", "").rstrip('/').split('/')[-1] if v.get("url") else "",
@@ -68,13 +62,10 @@ def api_listado():
             return jsonify({"resultados": items, "seccion": "Busqueda", "pagina": 1})
         except Exception as e:
             return jsonify({"error": f"No se pudo buscar: {str(e)}"}), 500
-    # Si no se manda sección, usar la primera disponible
     seccion = request.args.get('seccion')
     pagina = int(request.args.get('pagina', 1))
-    # Si no se manda sección, usar la primera disponible
     if not seccion:
         seccion = SECCIONES_LIST[0]
-    # Buscar sección tolerante a acentos y mayúsculas
     seccion_normalizada = normaliza(seccion)
     seccion_real = None
     for nombre in SECCIONES_LIST:
@@ -91,7 +82,7 @@ def api_listado():
             url = f"{url}page/{pagina}"
     html = fetch_html(url)
     if html:
-        resultados = extract_from_listing(html)
+        resultados = extraer_listado(html)
     else:
         return jsonify({"error": "No se pudo obtener HTML para la página."}), 500
     return jsonify({"resultados": resultados, "seccion": seccion_real, "pagina": pagina})
@@ -99,22 +90,20 @@ def api_listado():
 @app.route('/api/serie/<slug>', methods=['GET'])
 def api_ver_serie(slug):
     url = None
-    # Buscar primero en series
     for s in TARGET_URLS:
         if s['nombre'].lower() == 'series':
             url = f"{s['url']}/{slug}"
             break
     info = {"sinopsis": "", "titulo": ""}
-    result = extract_episodios(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
+    result = extraer_episodios_serie(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
     episodios = result.get("episodios", [])
     info["sinopsis"] = result.get("sinopsis", "")
     info["titulo"] = result.get("titulo", "")
-    # Si no hay episodios, intentar en animes
     if not episodios:
         for s in TARGET_URLS:
             if s['nombre'].lower() == 'anime':
                 url = f"{s['url']}/{slug}"
-                result = extract_episodios(url)
+                result = extraer_episodios_serie(url)
                 episodios = result.get("episodios", [])
                 info["sinopsis"] = result.get("sinopsis", "")
                 info["titulo"] = result.get("titulo", "")
@@ -133,71 +122,59 @@ def api_ver_serie(slug):
 @app.route('/api/pelicula/<slug>', methods=['GET'])
 def api_ver_pelicula(slug):
     url = None
-    found_in = None
-    # Buscar primero en películas (normalizando el nombre)
+    encontrado_en = None
     for s in TARGET_URLS:
         if normaliza(s['nombre']) == 'peliculas':
             url = f"{s['url']}/{slug}"
             break
     print(f"[DEBUG] Buscando en Películas: {url}")
-    player = extract_iframe_player(url) if url else None
-    info = {"sinopsis": "", "titulo": ""}
+    player = extraer_iframe_reproductor(url) if url else None
+    info = {}
     if url:
         import requests
         resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
         print(f"[DEBUG] Status code de requests.get (Películas): {resp.status_code}")
         if resp.ok:
             print(f"[DEBUG] HTML descargado (primeros 500 chars, Películas):\n{resp.text[:500]}")
-            extra = extract_sinopsis_titulo(resp.text)
-            print(f"[DEBUG] Título extraído (Películas): {extra.get('titulo')}")
-            print(f"[DEBUG] Sinopsis extraída (Películas): {extra.get('sinopsis')}")
-            info["sinopsis"] = extra.get("sinopsis", "")
-            info["titulo"] = extra.get("titulo", "")
+            info = extraer_info_pelicula(resp.text)
     if player:
-        found_in = "peliculas"
-    # Si no hay player, intentar en películas de anime (normalizando el nombre)
+        encontrado_en = "peliculas"
     if not player:
         for s in TARGET_URLS:
             if normaliza(s['nombre']) == 'peliculas de anime':
                 url = f"{s['url']}/{slug}"
                 print(f"[DEBUG] Buscando en Peliculas de Anime: {url}")
-                player = extract_iframe_player(url)
+                player = extraer_iframe_reproductor(url)
                 if url:
                     import requests
                     resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
                     print(f"[DEBUG] Status code de requests.get (Peliculas de Anime): {resp.status_code}")
                     if resp.ok:
                         print(f"[DEBUG] HTML descargado (primeros 500 chars, Peliculas de Anime):\n{resp.text[:500]}")
-                        extra = extract_sinopsis_titulo(resp.text)
-                        print(f"[DEBUG] Título extraído (Peliculas de Anime): {extra.get('titulo')}")
-                        print(f"[DEBUG] Sinopsis extraída (Peliculas de Anime): {extra.get('sinopsis')}")
-                        info["sinopsis"] = extra.get("sinopsis", "")
-                        info["titulo"] = extra.get("titulo", "")
+                        info = extraer_info_pelicula(resp.text)
                 if player:
-                    found_in = "peliculas de anime"
+                    encontrado_en = "peliculas de anime"
                     break
     if not player:
         print(f"[ERROR] No se encontró reproductor para {slug} en ninguna sección")
         return jsonify({"error": "Película no encontrada en películas ni en películas de anime"}), 404
-    # Normalizar los campos del player para el frontend
     player = {
         "player_url": player.get("player_url"),
         "source": player.get("fuente"),
         "format": player.get("formato")
     }
-    print(f"[DEBUG] Encontrado en: {found_in}")
-    print(f"[DEBUG] Respuesta final: slug={slug}, player={player}, url={url}, info={info}, found_in={found_in}")
-    return jsonify({"slug": slug, "player": player, "url": url, "info": info, "found_in": found_in})
+    print(f"[DEBUG] Encontrado en: {encontrado_en}")
+    print(f"[DEBUG] Respuesta final: slug={slug}, player={player}, url={url}, info={info}, encontrado_en={encontrado_en}")
+    return jsonify({"slug": slug, "player": player, "url": url, "info": info, "encontrado_en": encontrado_en})
 
 @app.route('/api/anime/<slug>', methods=['GET'])
 def api_ver_anime(slug):
     url = None
-    # Buscar en la ruta de animes
     for s in TARGET_URLS:
         if s['nombre'].lower() == 'anime':
             url = f"{s['url']}/{slug}"
             break
-    result = extract_episodios(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
+    result = extraer_episodios_serie(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
     episodios = result.get("episodios", [])
     info = {"sinopsis": result.get("sinopsis", ""), "titulo": result.get("titulo", "")}
     if not episodios:
@@ -215,12 +192,11 @@ def api_iframe_player():
     url = request.args.get('url')
     if not url:
         return jsonify({'error': 'Falta URL'}), 400
-    player = extract_iframe_player(url)
+    player = extraer_iframe_reproductor(url)
     if not player:
         return jsonify({'error': 'No se encontró el reproductor'}), 404
     return jsonify(player)
 
-# === SERVIR FRONTEND COMPILADO ===
 FRONTEND_DIST = os.path.join(os.path.dirname(__file__), 'FrontEnd', 'dist')
 print(FRONTEND_DIST)
 @app.route('/assets/<path:path>')
@@ -230,11 +206,9 @@ def send_assets(path):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
-    # Si la ruta existe como archivo, la servimos
     file_path = os.path.join(FRONTEND_DIST, path)
     if path != "" and os.path.exists(file_path):
         return send_from_directory(FRONTEND_DIST, path)
-    # Si no, devolvemos el index.html (SPA fallback)
     return send_from_directory(FRONTEND_DIST, 'index.html')
 
 if __name__ == '__main__':
