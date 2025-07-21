@@ -1,14 +1,8 @@
 # Etapa 1: Build del frontend (React + Vite)
-
-FROM ubuntu:latest
-
-RUN apt update && apt upgrade -y && apt install python3 -y && apt install npm -y
-RUN git clone https://github.com/UnfairAdventage/Web-Scrapping.git
-
 FROM node:20-alpine AS frontend-build
 
-WORKDIR /app/frontend
-COPY FrontEnd/project/ ./
+WORKDIR /app/frontend/project
+COPY ../frontend/project/ ./
 RUN npm install && npm run build
 
 # Etapa 2: Backend Python + servir frontend
@@ -20,16 +14,22 @@ RUN apt-get update && apt-get install -y build-essential libglib2.0-0 libsm6 lib
 WORKDIR /app
 
 # Copia el backend
-COPY . .
+COPY ../backend/ ./backend/
 
 # Copia el build del frontend al lugar donde Flask lo sirve
-COPY --from=frontend-build /app/frontend/dist ./FrontEnd/dist
+COPY --from=frontend-build /app/frontend/project/dist ./frontend/dist
+
+# Copia archivos de configuración y requirements
+COPY ../backend/requirements.txt ./backend/requirements.txt
+COPY ../backend/app.py ./backend/app.py
+COPY ../backend/config.py ./backend/config.py
+COPY ../backend/main.py ./backend/main.py
 
 # Instala dependencias Python
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r ./backend/requirements.txt
 
 # Expón el puerto para CasaOS
 EXPOSE 1234
 
 # Comando para arrancar Flask
-CMD ["python", "app.py"]
+CMD ["python", "-m", "backend.main"]
