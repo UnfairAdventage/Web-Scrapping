@@ -166,6 +166,31 @@ const api = {
     }));
   },
 
+  deepSearchCatalog: async (query: string): Promise<CatalogItem[]> => {
+    const response = await fetch(`${API_BASE_URL}/deep-search?query=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+      throw new Error('Failed to perform deep search');
+    }
+    const data = await response.json();
+    return (data as any[]).map((item) => ({
+      id: item.slug || item.url,
+      slug: item.slug || item.url,
+      title: item.titulo || item.title || item.nombre || '',
+      alt: item.alt || '',
+      image: item.imagen || item.image || '',
+      year: item.año || item.year || '',
+      genres: item.generos || item.genres || '',
+      language: item.idioma || item.language || 'Latino',
+      url: item.url,
+      type:
+        item.tipo === 'pelicula' || item.type === 'movie'
+          ? 'movie'
+          : item.tipo === 'serie' || item.type === 'series'
+            ? 'series'
+            : 'anime'
+    }));
+  },
+
   getAnimeData: async (slug: string): Promise<SeriesData> => {
     const response = await fetch(`${API_BASE_URL}/anime/${slug}`);
     if (!response.ok) {
@@ -231,6 +256,15 @@ export const useCatalogSearch = (query: string) => {
   return useQuery({
     queryKey: ['catalog-search', query],
     queryFn: () => api.searchCatalog(query),
+    enabled: !!query,
+    staleTime: 2 * 60 * 1000, // 2 minutos
+  });
+};
+
+export const useDeepSearchCatalog = (query: string) => {
+  return useQuery({
+    queryKey: ['deep-search-catalog', query],
+    queryFn: () => api.deepSearchCatalog(query),
     enabled: !!query,
     staleTime: 2 * 60 * 1000, // 2 minutos
   });

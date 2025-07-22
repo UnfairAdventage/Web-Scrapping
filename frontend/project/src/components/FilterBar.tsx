@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ScanSearch } from 'lucide-react';
 import { useSections } from '../hooks/useApi';
 
 interface FilterBarProps {
@@ -7,6 +7,7 @@ interface FilterBarProps {
   onSearchChange: (value: string) => void;
   section: string;
   onSectionChange: (value: string) => void;
+  onDeepSearch?: (query: string) => void; // Nueva prop opcional
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({
@@ -14,6 +15,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   onSearchChange,
   section,
   onSectionChange,
+  onDeepSearch,
 }) => {
   const [inputValue, setInputValue] = useState(search);
 
@@ -46,7 +48,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       {/* Search */}
-      <div className="relative flex-1">
+      <div className="relative flex-1 flex items-center gap-2">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
           type="text"
@@ -55,6 +57,16 @@ const FilterBar: React.FC<FilterBarProps> = ({
           placeholder="Buscar películas y series..."
           className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
+        {/* Botón de Búsqueda profunda */}
+        {onDeepSearch && (
+          <button
+            type="button"
+            onClick={() => onDeepSearch(inputValue)}
+            className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            <ScanSearch />
+          </button>
+        )}
       </div>
 
       {/* Section Filter */}

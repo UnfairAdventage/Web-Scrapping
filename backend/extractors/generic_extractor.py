@@ -27,7 +27,6 @@ def extraer_listado(html):
                 "anio": anio,
                 "generos": generos,
                 "idioma": idioma,
-                "url": enlace,
                 "tipo": tipo
             })
         except Exception as e:

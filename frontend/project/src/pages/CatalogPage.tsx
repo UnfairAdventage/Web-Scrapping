@@ -1,6 +1,6 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useCatalog } from '../hooks/useApi';
+import { useCatalog, useDeepSearchCatalog } from '../hooks/useApi';
 import CatalogGrid from '../components/CatalogGrid';
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
@@ -21,6 +21,26 @@ const CatalogPage: React.FC<CatalogPageProps> = ({ section: sectionProp = '' }) 
   const search = useMemo(() => searchParams.get('search') || '', [searchParams]);
 
   const { data, isLoading, error, refetch } = useCatalog(page, section, search);
+  const [deepResults, setDeepResults] = useState<any[] | null>(null);
+  const [deepQuery, setDeepQuery] = useState<string>('');
+  const { data: deepData, isLoading: deepLoading, error: deepError } = useDeepSearchCatalog(deepQuery);
+
+  const handleDeepSearch = useCallback((query: string) => {
+    setDeepQuery(query);
+    setDeepResults(null); // Limpia resultados previos
+  }, []);
+
+  useEffect(() => {
+    if (deepData) {
+      setDeepResults(deepData);
+    }
+  }, [deepData]);
+
+  // Si el usuario cambia la búsqueda normal, resetea la búsqueda profunda
+  useEffect(() => {
+    setDeepQuery('');
+    setDeepResults(null);
+  }, [search, section, page]);
 
   // Preload de la primera imagen del catálogo (LCP)
   useEffect(() => {
@@ -111,9 +131,18 @@ const CatalogPage: React.FC<CatalogPageProps> = ({ section: sectionProp = '' }) 
         onSearchChange={handleSearchChange}
         section={section}
         onSectionChange={handleSectionChange}
+        onDeepSearch={handleDeepSearch}
       />
 
-      {isLoading ? (
+      {deepQuery ? (
+        deepLoading ? (
+          <CatalogGrid items={[]} loading={true} />
+        ) : deepError ? (
+          <div className="text-red-500 text-center my-8">Error en búsqueda profunda</div>
+        ) : (
+          <CatalogGrid items={deepResults || []} />
+        )
+      ) : isLoading ? (
         <CatalogGrid items={[]} loading={true} />
       ) : (
         <>

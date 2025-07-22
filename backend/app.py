@@ -1,6 +1,8 @@
 import sys
 import os
 import unicodedata
+import requests
+from urllib.parse import quote_plus
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -30,7 +32,6 @@ def api_secciones():
 def api_listado():
     busqueda = request.args.get('busqueda')
     if busqueda:
-        import requests
         query = busqueda.strip()
         url = f"https://sololatino.net/wp-json/dooplay/search/?keyword={query}&nonce=84428a202e"
         try:
@@ -52,7 +53,6 @@ def api_listado():
                             "year": v.get("extra", {}).get("date", ""),
                             "genres": "",
                             "language": "Latino",
-                            "url": v.get("url", ""),
                             "type": tipo
                         })
             elif isinstance(data, list):
@@ -86,6 +86,21 @@ def api_listado():
     else:
         return jsonify({"error": "No se pudo obtener HTML para la página."}), 500
     return jsonify({"resultados": resultados, "seccion": seccion_real, "pagina": pagina})
+
+@app.route('/api/deep-search', methods=['GET'])
+def api_deep_search():
+    query = request.args.get('query', '').strip()
+    if not query:
+        return jsonify({'error': 'Falta el parámetro de búsqueda'}), 400
+    url = f"https://sololatino.net/?s={quote_plus(query)}"
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        html = resp.text
+        resultados = extraer_listado(html)
+        return jsonify(resultados)
+    except Exception as e:
+        return jsonify({'error': f'No se pudo realizar la búsqueda profunda: {str(e)}'}), 500
 
 @app.route('/api/serie/<slug>', methods=['GET'])
 def api_ver_serie(slug):
@@ -165,7 +180,7 @@ def api_ver_pelicula(slug):
     }
     print(f"[DEBUG] Encontrado en: {encontrado_en}")
     print(f"[DEBUG] Respuesta final: slug={slug}, player={player}, url={url}, info={info}, encontrado_en={encontrado_en}")
-    return jsonify({"slug": slug, "player": player, "url": url, "info": info, "encontrado_en": encontrado_en})
+    return jsonify({"slug": slug, "player": player, "info": info, "encontrado_en": encontrado_en})
 
 @app.route('/api/anime/<slug>', methods=['GET'])
 def api_ver_anime(slug):
@@ -197,8 +212,7 @@ def api_iframe_player():
         return jsonify({'error': 'No se encontró el reproductor'}), 404
     return jsonify(player)
 
-FRONTEND_DIST = os.path.join(os.path.dirname(__file__), 'FrontEnd', 'dist')
-print(FRONTEND_DIST)
+FRONTEND_DIST = os.path.abspath(os.path.join(os.path.dirname(__file__), '../frontend/dist'))
 @app.route('/assets/<path:path>')
 def send_assets(path):
     return send_from_directory(os.path.join(FRONTEND_DIST, 'assets'), path)

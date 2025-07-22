@@ -23,7 +23,6 @@ def extraer_episodios_serie(url):
         episodios = temporada_div.select('li')
         for episodio in episodios:
             try:
-                enlace = episodio.select_one('a')['href']
                 titulo_ep = episodio.select_one('.epst').text.strip() if episodio.select_one('.epst') else ''
                 numerando = episodio.select_one('.numerando').text.strip() if episodio.select_one('.numerando') else ''
                 numero_ep = int(numerando.split('-')[-1].strip()) if numerando else 0
@@ -34,7 +33,6 @@ def extraer_episodios_serie(url):
                     "episodio": numero_ep,
                     "titulo": titulo_ep,
                     "fecha": fecha,
-                    "url": enlace,
                     "imagen": imagen
                 })
             except Exception as e:
