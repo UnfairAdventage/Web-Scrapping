@@ -17,7 +17,7 @@ WORKDIR /app
 COPY ../backend/ ./backend/
 
 # Copia el build del frontend al lugar donde Flask lo sirve
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
+COPY --from=frontend-build /app/frontend/project/dist ./frontend/dist
 
 # Copia archivos de configuración y requirements
 COPY ../backend/requirements.txt ./backend/requirements.txt
