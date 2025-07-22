@@ -7,13 +7,26 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 - Catálogo de películas y series extraído de fuentes web
 - Backend API RESTful con Flask
 - Frontend moderno con React, Vite y TailwindCSS
-- Paginación, filtrado y búsqueda en el catálogo
+- **Paginación con rutas limpias**: ahora la navegación entre páginas usa URLs tipo `/page/2` en vez de parámetros de query (`?page=2`)
+- Filtrado y búsqueda en el catálogo
 - Visualización de detalles y sinopsis
 - Modal de reproducción de video (streaming)
 - Extracción de iframes y enlaces de video
 - Sistema de extractores modular y extensible
 - Listo para despliegue en CasaOS vía Docker
 - Pruebas unitarias y de integración incluidas
+
+## Ejemplo de URLs
+
+- Página principal: `http://localhost:1234/page/1`
+- Página 2 del catálogo: `http://localhost:1234/page/2`
+- Filtros y búsqueda: `http://localhost:1234/page/2?search=accion&section=Películas`
+
+## Cambios recientes importantes
+
+- La paginación ahora utiliza rutas limpias (`/page/2`) para mejor compatibilidad y SEO.
+- El backend Flask sirve el frontend como SPA, permitiendo navegación directa a cualquier ruta.
+- Cada ítem del catálogo ahora incluye un campo `url` generado automáticamente.
 
 ## Requisitos
 

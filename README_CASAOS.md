@@ -73,6 +73,20 @@ peliculas/
 
 ---
 
+## Cambios recientes importantes
+
+- La paginación ahora utiliza rutas limpias (`/page/2`) en vez de parámetros de query (`?page=2`).
+- El backend Flask sirve el frontend como SPA, permitiendo navegación directa a cualquier ruta.
+- Cada ítem del catálogo ahora incluye un campo `url` generado automáticamente.
+
+## Ejemplo de URLs
+
+- Página principal: `http://localhost:1234/page/1`
+- Página 2 del catálogo: `http://localhost:1234/page/2`
+- Filtros y búsqueda: `http://localhost:1234/page/2?search=accion&section=Películas`
+
+---
+
 ## ⚙️ Variables de entorno
 - El puerto es **siempre 1234**.
 - El frontend detecta automáticamente la IP del servidor.
