@@ -83,6 +83,11 @@ def api_listado():
     html = fetch_html(url)
     if html:
         resultados = extraer_listado(html)
+        # Asegurar que cada item tenga el campo 'url'
+        for item in resultados:
+            if 'url' not in item or not item['url']:
+                # Construir una URL básica usando la sección y el slug
+                item['url'] = f"{url.rstrip('/')}/{item.get('slug', '')}"
     else:
         return jsonify({"error": "No se pudo obtener HTML para la página."}), 500
     return jsonify({"resultados": resultados, "seccion": seccion_real, "pagina": pagina})

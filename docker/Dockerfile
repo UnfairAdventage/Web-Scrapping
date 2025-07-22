@@ -32,4 +32,4 @@ RUN pip install --no-cache-dir -r ./backend/requirements.txt
 EXPOSE 1234
 
 # Comando para arrancar Flask
-CMD ["python", "-m", "backend.main"]
+CMD ["python", "-m", "backend.app"]

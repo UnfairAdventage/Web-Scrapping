@@ -27,7 +27,8 @@ def extraer_listado(html):
                 "anio": anio,
                 "generos": generos,
                 "idioma": idioma,
-                "tipo": tipo
+                "tipo": tipo,
+                "url": enlace
             })
         except Exception as e:
             print(f"[ERROR] Falló al parsear un artículo: {e}")

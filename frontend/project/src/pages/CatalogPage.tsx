@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { useCatalog, useDeepSearchCatalog } from '../hooks/useApi';
 import CatalogGrid from '../components/CatalogGrid';
 import FilterBar from '../components/FilterBar';
@@ -13,9 +13,14 @@ interface CatalogPageProps {
 
 const CatalogPage: React.FC<CatalogPageProps> = ({ section: sectionProp = '' }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { pageNumber } = useParams();
 
   // Derivar valores de la URL
-  const page = useMemo(() => parseInt(searchParams.get('page') || '1', 10), [searchParams]);
+  const page = useMemo(() => {
+    // Si hay pageNumber en la ruta, úsalo, si no, usa query param 'page', si no, 1
+    return parseInt(pageNumber || searchParams.get('page') || '1', 10);
+  }, [pageNumber, searchParams]);
   // Si hay prop section, úsala, si no, usa la de la URL
   const section = useMemo(() => sectionProp || searchParams.get('section') || '', [sectionProp, searchParams]);
   const search = useMemo(() => searchParams.get('search') || '', [searchParams]);
@@ -61,17 +66,10 @@ const CatalogPage: React.FC<CatalogPageProps> = ({ section: sectionProp = '' }) 
 
   // Handlers optimizados
   const handlePageChange = useCallback((newPage: number) => {
-    setSearchParams(prev => {
-      const params = new URLSearchParams(prev);
-      if (newPage > 1) {
-        params.set('page', newPage.toString());
-      } else {
-        params.delete('page');
-      }
-      return params;
-    });
+    // Navegar usando rutas limpias
+    navigate(`/page/${newPage}${search ? `?search=${encodeURIComponent(search)}` : ''}${section ? (search ? `&` : `?`) + `section=${encodeURIComponent(section)}` : ''}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [setSearchParams]);
+  }, [navigate, search, section]);
 
   const handleSectionChange = useCallback((newSection: string) => {
     setSearchParams(prev => {

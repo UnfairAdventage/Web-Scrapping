@@ -40,4 +40,8 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    //historyApiFallback: true, // <-- Esto es clave para SPA
+    port: 1234,
+  },
 });

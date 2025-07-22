@@ -28,13 +28,14 @@ function App() {
           <Layout>
             <Suspense fallback={<div className="text-center text-white py-10">Cargando...</div>}>
               <Routes>
-                <Route path="/" element={<CatalogPage section="" />} />
+                <Route path="/" element={<Navigate to="/page/1" replace />} />
+                <Route path="/page/:pageNumber" element={<CatalogPage section="" />} />
                 <Route path="/peliculas" element={<CatalogPage section="Películas" />} />
                 <Route path="/series" element={<CatalogPage section="Series" />} />
                 <Route path="/series/:slug" element={<SeriesDetailPage />} />
                 <Route path="/movie/:slug" element={<MovieDetailPage />} />
                 <Route path="/anime/:slug" element={<AnimeDetailPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* <Route path="*" element={<Navigate to="/page/1" replace />} /> */}
               </Routes>
             </Suspense>
           </Layout>
