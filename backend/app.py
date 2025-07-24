@@ -114,19 +114,16 @@ def api_ver_serie(slug):
         if s['nombre'].lower() == 'series':
             url = f"{s['url']}/{slug}"
             break
-    info = {"sinopsis": "", "titulo": ""}
-    result = extraer_episodios_serie(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
+    result = extraer_episodios_serie(url) if url else {"episodios": [], "info": {}}
     episodios = result.get("episodios", [])
-    info["sinopsis"] = result.get("sinopsis", "")
-    info["titulo"] = result.get("titulo", "")
+    info = result.get("info", {})
     if not episodios:
         for s in TARGET_URLS:
             if s['nombre'].lower() == 'anime':
                 url = f"{s['url']}/{slug}"
                 result = extraer_episodios_serie(url)
                 episodios = result.get("episodios", [])
-                info["sinopsis"] = result.get("sinopsis", "")
-                info["titulo"] = result.get("titulo", "")
+                info = result.get("info", {})
                 if episodios:
                     break
     if not episodios:
@@ -194,9 +191,9 @@ def api_ver_anime(slug):
         if s['nombre'].lower() == 'anime':
             url = f"{s['url']}/{slug}"
             break
-    result = extraer_episodios_serie(url) if url else {"episodios": [], "sinopsis": "", "titulo": ""}
+    result = extraer_episodios_serie(url) if url else {"episodios": [], "info": {}}
     episodios = result.get("episodios", [])
-    info = {"sinopsis": result.get("sinopsis", ""), "titulo": result.get("titulo", "")}
+    info = result.get("info", {})
     if not episodios:
         return jsonify({"error": "Anime no encontrado"}), 404
     temporadas = {}
