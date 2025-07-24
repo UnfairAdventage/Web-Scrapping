@@ -51,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || loading}
-        className="flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center px-3 py-2 text-sm font-medium text-ghost-white bg-dark-gray border border-dark-gray rounded-lg hover:bg-neon-cyan hover:text-space-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-orbitron"
       >
         <ChevronLeft className="h-4 w-4 mr-1" />
         Anterior
@@ -61,15 +61,15 @@ const Pagination: React.FC<PaginationProps> = ({
         {getPageNumbers().map((page, index) => (
           <React.Fragment key={index}>
             {page === '...' ? (
-              <span className="px-3 py-2 text-gray-400">...</span>
+              <span className="px-3 py-2 text-gray-light font-orbitron">...</span>
             ) : (
               <button
                 onClick={() => onPageChange(page as number)}
                 disabled={loading}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-3 py-2 text-sm font-bold rounded-lg transition-colors font-orbitron ${
                   currentPage === page
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-300 bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-neon-cyan text-space-black text-glow-cyan border-neon-cyan'
+                    : 'text-ghost-white bg-dark-gray border border-dark-gray hover:bg-neon-cyan hover:text-space-black'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 {page}
@@ -82,7 +82,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages || loading}
-        className="flex items-center px-3 py-2 text-sm font-medium text-gray-300 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center px-3 py-2 text-sm font-medium text-ghost-white bg-dark-gray border border-dark-gray rounded-lg hover:bg-neon-cyan hover:text-space-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-orbitron"
       >
         Siguiente
         <ChevronRight className="h-4 w-4 ml-1" />

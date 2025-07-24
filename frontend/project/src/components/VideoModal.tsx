@@ -25,14 +25,14 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, titl
   if (isExternalPlayer(videoUrl)) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-        <div className="bg-gray-900 rounded-lg shadow-lg p-4 max-w-3xl w-full relative">
+        <div className="bg-dark-gray rounded-lg shadow-lg p-4 max-w-3xl w-full relative">
           <button
             onClick={onClose}
-            className="absolute top-2 right-2 text-gray-400 hover:text-white"
+            className="absolute top-2 right-2 text-neon-cyan hover:text-space-black hover:bg-neon-cyan rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl transition-colors"
           >
             ×
           </button>
-          <h2 className="text-xl font-bold text-white mb-4">{title}</h2>
+          <h2 className="text-xl font-bold text-neon-cyan text-glow-cyan font-orbitron mb-4">{title}</h2>
           <div className="aspect-w-16 aspect-h-9">
             <iframe
               src={videoUrl}
@@ -135,13 +135,13 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, titl
       <div className="absolute inset-0 bg-black bg-opacity-75" onClick={onClose} />
       
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="relative w-full max-w-6xl mx-auto bg-gray-900 rounded-lg overflow-hidden">
+        <div className="relative w-full max-w-6xl mx-auto bg-dark-gray rounded-lg overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-700">
-            <h2 className="text-lg font-medium text-white truncate">{title}</h2>
+          <div className="flex items-center justify-between p-4 border-b border-neon-cyan">
+            <h2 className="text-lg font-bold text-neon-cyan text-glow-cyan font-orbitron truncate">{title}</h2>
             <button
               onClick={onClose}
-              className="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition-colors"
+              className="flex items-center justify-center w-8 h-8 text-neon-cyan hover:text-space-black hover:bg-neon-cyan rounded-full transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
@@ -152,8 +152,8 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, titl
             {isLoading && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto mb-4" />
-                  <p className="text-gray-400">Cargando reproductor...</p>
+                  <Loader2 className="h-8 w-8 animate-spin text-neon-cyan text-glow-cyan mx-auto mb-4" />
+                  <p className="text-neon-cyan text-glow-cyan font-orbitron">Cargando reproductor...</p>
                 </div>
               </div>
             )}
@@ -161,11 +161,11 @@ const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, videoUrl, titl
             {error && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-4" />
-                  <p className="text-gray-400">Error al cargar el reproductor</p>
+                  <AlertCircle className="h-8 w-8 text-neon-magenta text-glow-magenta mx-auto mb-4" />
+                  <p className="text-neon-magenta text-glow-magenta font-orbitron">Error al cargar el reproductor</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+                    className="mt-4 border-2 border-neon-cyan text-neon-cyan rounded-lg bg-transparent hover:bg-neon-cyan hover:text-space-black font-orbitron px-4 py-2 transition-colors text-glow-cyan"
                   >
                     Reintentar
                   </button>

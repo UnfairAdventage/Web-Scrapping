@@ -27,3 +27,6 @@ dist-ssr
 .env
 .venv
 *.txt
+
+# Extras
+plan.md

@@ -47,12 +47,13 @@ const SeriesDetailPage: React.FC = () => {
   }
 
   const { info, episodes } = seriesData;
+  console.log(seriesData);
 
-  const tituloReal = info.tituloReal || info.titulo || info.title;
+  const tituloReal = info.tituloReal || info.title || '';
   const sinopsis = info.sinopsis || 'Una emocionante serie que te mantendrá al borde de tu asiento con cada episodio. Descubre una trama llena de acción, drama y personajes memorables.';
-  const year = info.fecha_estreno || info.year || '';
-  const genres = Array.isArray(info.generos) && info.generos.length > 0 ? info.generos.join(', ') : (info.genres || '');
-  const image = info.imagen_poster || info.image;
+  const year = info.year || '';
+  const genres = Array.isArray(info.genres) && info.genres.length > 0 ? info.genres.join(', ') : (info.genres || '');
+  const image = info.image || '';
   const alt = info.alt || '';
   const language = info.language || 'Latino';
 
@@ -90,7 +91,7 @@ const SeriesDetailPage: React.FC = () => {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-4xl font-bold text-white mb-4">{tituloReal}</h1>
+          <h1 className="text-4xl font-bold text-neon-cyan text-glow-cyan font-orbitron mb-4">{tituloReal}</h1>
           
           <div className="flex flex-wrap items-center gap-4 mb-4">
             <span className="flex items-center text-gray-400">
@@ -107,14 +108,14 @@ const SeriesDetailPage: React.FC = () => {
             </span>
           </div>
 
-          <p className="text-gray-300 mb-6 leading-relaxed">
+          <p className="text-ghost-white mb-6 leading-relaxed font-roboto">
             {sinopsis}
           </p>
 
           <div className="flex flex-wrap gap-4">
             <button
               onClick={() => handlePlayEpisode(currentSeasonEpisodes[0])}
-              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              className="flex items-center bg-electric-sky text-space-black border-2 border-electric-sky text-glow-electric-sky font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-electric-sky hover:text-glow-electric-sky hover:border-electric-sky"
             >
               <Play className="h-5 w-5 mr-2" />
               Reproducir primer episodio
@@ -125,17 +126,17 @@ const SeriesDetailPage: React.FC = () => {
 
       {/* Season Selection */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-4">Temporadas</h2>
+        <h2 className="text-2xl font-bold text-neon-cyan font-orbitron mb-4">Temporadas</h2>
         <div className="flex flex-wrap gap-2">
           {seasons.map((season) => (
             <button
               key={season}
               onClick={() => setSelectedSeason(season)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                selectedSeason === season
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+              className={`px-4 py-2 rounded-lg font-bold font-orbitron border-2 transition-colors shadow-md
+                ${selectedSeason === season
+                  ? 'bg-electric-sky text-space-black border-electric-sky box-glow-electric-sky'
+                  : 'bg-dark-gray text-gray-light border-dark-gray hover:bg-electric-sky hover:text-space-black hover:border-electric-sky hover:box-glow-electric-sky'}
+              `}
             >
               Temporada {season}
             </button>
@@ -145,7 +146,7 @@ const SeriesDetailPage: React.FC = () => {
 
       {/* Episodes Grid */}
       <div className="mb-8">
-        <h3 className="text-xl font-bold text-white mb-4">
+        <h3 className="text-xl font-bold text-neon-cyan font-orbitron mb-4">
           Episodios - Temporada {selectedSeason}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -167,10 +168,10 @@ const SeriesDetailPage: React.FC = () => {
                 </div>
               </div>
               <div className="p-4">
-                <h4 className="font-medium text-white mb-1">
+                <h4 className="font-medium text-neon-cyan font-orbitron mb-1">
                   {episode.episode}. {episode.title}
                 </h4>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-light font-roboto">
                   {new Date(episode.date).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'long',

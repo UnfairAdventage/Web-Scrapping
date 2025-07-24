@@ -1,3 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-space-black text-ghost-white font-roboto;
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 5px #00FFFF, 0 0 8px #00FFFF;
+}
+.text-glow-magenta {
+  text-shadow: 0 0 5px #FF00FF, 0 0 8px #FF00FF;
+}
+.text-glow-electric-sky {
+  text-shadow: 0 0 5px #00B5FF, 0 0 8px #00B5FF;
+}
+.text-glow-violet-blue {
+  text-shadow: 0 0 5px #3D5BFF, 0 0 8px #3D5BFF;
+}
+.text-glow-deep-purple {
+  text-shadow: 0 0 5px #8E3BFF, 0 0 8px #8E3BFF;
+}
+.text-glow-magenta-pink {
+  text-shadow: 0 0 5px #D93BDD, 0 0 8px #D93BDD;
+}
+.text-glow-fuchsia-pink {
+  text-shadow: 0 0 5px #FF3B9A, 0 0 8px #FF3B9A;
+}
+.text-glow-red {
+  text-shadow: 0 0 5px #FF1744, 0 0 8px #FF1744;
+}
+
+.box-glow-electric-sky {
+  box-shadow: 0 0 8px 2px #00B5FF, 0 0 16px 4px #00B5FF44;
+}
+.box-glow-violet-blue {
+  box-shadow: 0 0 8px 2px #3D5BFF, 0 0 16px 4px #3D5BFF44;
+}
+.box-glow-deep-purple {
+  box-shadow: 0 0 8px 2px #8E3BFF, 0 0 16px 4px #8E3BFF44;
+}
+.box-glow-magenta-pink {
+  box-shadow: 0 0 8px 2px #D93BDD, 0 0 16px 4px #D93BDD44;
+}
+.box-glow-fuchsia-pink {
+  box-shadow: 0 0 8px 2px #FF3B9A, 0 0 16px 4px #FF3B9A44;
+}
+.box-glow-red {
+  box-shadow: 0 0 8px 2px #FF1744, 0 0 16px 4px #FF174488;
+}

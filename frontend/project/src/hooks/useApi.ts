@@ -48,7 +48,15 @@ const api = {
       alt: item.alt || '',
       image: item.imagen || item.image || '',
       year: item.año || item.year || '',
-      genres: item.generos || item.genres || '',
+      genres: Array.isArray(item.generos)
+        ? item.generos
+        : Array.isArray(item.genres)
+          ? item.genres
+          : typeof item.generos === 'string' && item.generos.trim() !== ''
+            ? item.generos.split(',').map((g: string) => g.trim())
+            : typeof item.genres === 'string' && item.genres.trim() !== ''
+              ? item.genres.split(',').map((g: string) => g.trim())
+              : [],
       language: item.idioma || item.language || 'Latino',
       url: item.url,
       type:
@@ -99,7 +107,15 @@ const api = {
       alt: `Alt text for ${slug}`,
       image: data.imagen || episodes[0]?.image || 'https://images.pexels.com/photos/1500000/pexels-photo-1500000.jpeg?auto=compress&cs=tinysrgb&w=400&h=600',
       year: data.año || data.year || '2023',
-      genres: data.generos || data.genres || 'Drama, Acción',
+      genres: Array.isArray(data.generos)
+        ? data.generos
+        : Array.isArray(data.genres)
+          ? data.genres
+          : typeof data.generos === 'string' && data.generos.trim() !== ''
+            ? data.generos.split(',').map((g: string) => g.trim())
+            : typeof data.genres === 'string' && data.genres.trim() !== ''
+              ? data.genres.split(',').map((g: string) => g.trim())
+              : [],
       language: 'Latino',
       url: data.url || `https://sololatino.net/series/${slug}/`,
       type: 'series',
@@ -179,7 +195,15 @@ const api = {
       alt: item.alt || '',
       image: item.imagen || item.image || '',
       year: item.año || item.year || '',
-      genres: item.generos || item.genres || '',
+      genres: Array.isArray(item.generos)
+        ? item.generos
+        : Array.isArray(item.genres)
+          ? item.genres
+          : typeof item.generos === 'string' && item.generos.trim() !== ''
+            ? item.generos.split(',').map((g: string) => g.trim())
+            : typeof item.genres === 'string' && item.genres.trim() !== ''
+              ? item.genres.split(',').map((g: string) => g.trim())
+              : [],
       language: item.idioma || item.language || 'Latino',
       url: item.url,
       type:

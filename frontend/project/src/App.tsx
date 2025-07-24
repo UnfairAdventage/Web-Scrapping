@@ -26,7 +26,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Router>
           <Layout>
-            <Suspense fallback={<div className="text-center text-white py-10">Cargando...</div>}>
+            <Suspense fallback={<div className="text-center text-neon-cyan text-glow-cyan py-10 bg-space-black">Cargando...</div>}>
               <Routes>
                 <Route path="/" element={<Navigate to="/page/1" replace />} />
                 <Route path="/page/:pageNumber" element={<CatalogPage section="" />} />

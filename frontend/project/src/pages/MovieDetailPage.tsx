@@ -69,7 +69,7 @@ const MovieDetailPage: React.FC = () => {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-4xl font-bold text-white mb-4">{title}</h1>
+          <h1 className="text-4xl font-bold text-fuchsia-pink text-glow-fuchsia-pink font-orbitron mb-4">{title}</h1>
           
           <div className="flex flex-wrap items-center gap-4 mb-4">
             <span className="flex items-center text-gray-400">
@@ -86,14 +86,14 @@ const MovieDetailPage: React.FC = () => {
             </span>
           </div>
 
-          <p className="text-gray-300 mb-6 leading-relaxed">
+          <p className="text-ghost-white mb-6 leading-relaxed font-roboto">
             {sinopsis}
           </p>
 
           <div className="flex flex-wrap gap-4">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              className="flex items-center bg-fuchsia-pink text-space-black border-2 border-fuchsia-pink text-glow-fuchsia-pink font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-fuchsia-pink hover:text-glow-fuchsia-pink hover:border-fuchsia-pink"
             >
               <Play className="h-5 w-5 mr-2" />
               Reproducir película

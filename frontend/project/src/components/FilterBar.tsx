@@ -55,14 +55,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Buscar películas y series..."
-          className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 bg-dark-gray border border-dark-gray rounded-lg text-ghost-white placeholder-gray-light focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:border-neon-cyan transition-colors font-roboto"
         />
         {/* Botón de Búsqueda profunda */}
         {onDeepSearch && (
           <button
             type="button"
             onClick={() => onDeepSearch(inputValue)}
-            className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="ml-2 px-4 py-2 border-2 border-neon-cyan text-neon-cyan rounded-lg bg-transparent hover:bg-neon-cyan hover:text-space-black font-orbitron transition-colors text-glow-cyan"
           >
             <ScanSearch />
           </button>
@@ -79,7 +79,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
           value={section}
           onChange={(e) => onSectionChange(e.target.value)}
           disabled={sectionsLoading}
-          className="pl-10 pr-8 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+          className="pl-10 pr-8 py-2 bg-dark-gray border border-dark-gray rounded-lg text-ghost-white focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:border-neon-cyan appearance-none cursor-pointer font-roboto transition-colors"
         >
           {sections.map((option) => (
             <option key={option.value} value={option.value}>
