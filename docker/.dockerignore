@@ -35,6 +35,11 @@ venv
 *.swo
 .DS_Store
 Thumbs.db
+.cursor/
+.cursor/rules/
+.gitignore
+plan.md
+BUILD.log
 
 # Otros
 *.sqlite3

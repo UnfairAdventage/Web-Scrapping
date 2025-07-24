@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <NavLink to="/" className="flex items-center space-x-2">
-              <img src="/icono.webp" alt="Anxer Studios" className={`h-8 w-8 drop-shadow-[0_0_5px_${color}]`} />
+              <img src="/icono.png" alt="Anxer Studios" className={`h-8 w-8 drop-shadow-[0_0_5px_${color}]`} />
               <span className={`text-xl font-bold font-orbitron ${appNameColor}`}>Anxer Studios</span>
             </NavLink>
 

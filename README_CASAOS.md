@@ -2,6 +2,8 @@
 
 Este proyecto es una aplicación web de streaming construida con **Flask (Python)** para el backend y **React + Vite** para el frontend. Este README te guía para desplegar la app fácilmente en **CasaOS** usando Docker.
 
+**Novedad:** Ahora las páginas de detalle de series y animes muestran géneros, póster y año igual que las películas, gracias a la paridad de metadatos en la API.
+
 ---
 
 ## 🚀 Despliegue rápido en CasaOS
@@ -78,6 +80,7 @@ peliculas/
 - La paginación ahora utiliza rutas limpias (`/page/2`) en vez de parámetros de query (`?page=2`).
 - El backend Flask sirve el frontend como SPA, permitiendo navegación directa a cualquier ruta.
 - Cada ítem del catálogo ahora incluye un campo `url` generado automáticamente.
+- **¡Nuevo!** Los endpoints de series (`/api/serie/<slug>`) y animes (`/api/anime/<slug>`) ahora devuelven metadatos enriquecidos: géneros, imagen de póster, año/fecha de estreno y sinopsis, igualando la calidad de información de las películas.
 
 ## Ejemplo de URLs
 
