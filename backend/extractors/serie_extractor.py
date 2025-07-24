@@ -9,13 +9,22 @@ def extraer_episodios_serie(url):
     respuesta = requests.get(url, headers=headers)
     if not respuesta.ok:
         print(f"[ERROR] No se pudo acceder a la URL: {url}")
-        return {"episodios": [], "sinopsis": "", "titulo": ""}
+        return {"info": {}, "episodios": []}
     html = respuesta.text
     soup = BeautifulSoup(html, 'html.parser')
     sinopsis = soup.select_one('div[itemprop="description"].wp-content')
     sinopsis = sinopsis.text.strip() if sinopsis else ''
     titulo = soup.select_one('h1.entry-title')
     titulo = titulo.text.strip() if titulo else ''
+    # Extraer géneros
+    generos_div = soup.find('div', class_='sgeneros')
+    generos = [a.text.strip() for a in generos_div.find_all('a')] if generos_div else []
+    # Extraer imagen de póster
+    poster_img = soup.select_one('div.poster img')
+    imagen_poster = poster_img['src'] if poster_img and poster_img.has_attr('src') else ''
+    # Extraer año/fecha de estreno
+    fecha_estreno = soup.find('span', itemprop='dateCreated')
+    fecha_estreno = fecha_estreno.text.strip() if fecha_estreno else ''
     temporadas_divs = soup.select('#seasons .se-c')
     episodios_data = []
     for temporada_div in temporadas_divs:
@@ -37,4 +46,11 @@ def extraer_episodios_serie(url):
                 })
             except Exception as e:
                 print(f"⚠️ Error en episodio: {e}")
-    return {"episodios": episodios_data, "sinopsis": sinopsis, "titulo": titulo} 
+    info = {
+        "titulo": titulo,
+        "sinopsis": sinopsis,
+        "generos": generos,
+        "imagen_poster": imagen_poster,
+        "fecha_estreno": fecha_estreno
+    }
+    return {"info": info, "episodios": episodios_data} 
