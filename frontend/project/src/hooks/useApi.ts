@@ -100,27 +100,20 @@ const api = {
         }
       });
     }
+    const info = data.info || {};
     const seriesInfo: CatalogItem = {
       id: slug,
       slug,
-      title: data.info?.titulo || data.titulo || `Serie ${slug}`,
+      title: info.titulo || data.titulo || `Serie ${slug}`,
       alt: `Alt text for ${slug}`,
-      image: data.imagen || episodes[0]?.image || 'https://images.pexels.com/photos/1500000/pexels-photo-1500000.jpeg?auto=compress&cs=tinysrgb&w=400&h=600',
-      year: data.año || data.year || '2023',
-      genres: Array.isArray(data.generos)
-        ? data.generos
-        : Array.isArray(data.genres)
-          ? data.genres
-          : typeof data.generos === 'string' && data.generos.trim() !== ''
-            ? data.generos.split(',').map((g: string) => g.trim())
-            : typeof data.genres === 'string' && data.genres.trim() !== ''
-              ? data.genres.split(',').map((g: string) => g.trim())
-              : [],
+      image: info.imagen_poster || episodes[0]?.image || '',
+      year: info.fecha_estreno || '',
+      genres: Array.isArray(info.generos) ? info.generos : [],
       language: 'Latino',
       url: data.url || `https://sololatino.net/series/${slug}/`,
       type: 'series',
-      sinopsis: data.info?.sinopsis || '',
-      tituloReal: data.info?.titulo || ''
+      sinopsis: info.sinopsis || '',
+      tituloReal: info.titulo || ''
     };
     return {
       info: seriesInfo,
@@ -238,19 +231,20 @@ const api = {
         }
       });
     }
+    const info = data.info || {};
     const animeInfo: CatalogItem = {
       id: slug,
       slug,
-      title: data.info?.titulo || data.titulo || `Anime ${slug}`,
+      title: info.titulo || data.titulo || `Anime ${slug}`,
       alt: `Alt text for ${slug}`,
-      image: data.imagen || episodes[0]?.image || 'https://images.pexels.com/photos/1500000/pexels-photo-1500000.jpeg?auto=compress&cs=tinysrgb&w=400&h=600',
-      year: data.año || data.year || '2023',
-      genres: data.generos || data.genres || 'Anime',
+      image: info.imagen_poster || episodes[0]?.image || '',
+      year: info.fecha_estreno || '',
+      genres: Array.isArray(info.generos) ? info.generos : [],
       language: 'Latino',
       url: data.url || `https://sololatino.net/animes/${slug}/`,
       type: 'anime',
-      sinopsis: data.info?.sinopsis || '',
-      tituloReal: data.info?.titulo || ''
+      sinopsis: info.sinopsis || '',
+      tituloReal: info.titulo || ''
     };
     return {
       info: animeInfo,

@@ -5,7 +5,7 @@ export interface CatalogItem {
   alt: string;
   image: string;
   year: string;
-  genres: string;
+  genres: string[];
   language: string;
   url: string;
   type: 'movie' | 'series' | 'anime';
