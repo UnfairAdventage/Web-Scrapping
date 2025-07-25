@@ -17,30 +17,28 @@ const Pagination: React.FC<PaginationProps> = ({
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+    let start = 1;
+    let end = totalPages;
     if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
+      start = 1;
+      end = totalPages;
     } else {
-      const start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-      const end = Math.min(totalPages, start + maxVisible - 1);
-      
-      if (start > 1) {
-        pages.push(1);
-        if (start > 2) pages.push('...');
-      }
-      
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-      
-      if (end < totalPages) {
-        if (end < totalPages - 1) pages.push('...');
-        pages.push(totalPages);
+      if (currentPage <= 3) {
+        start = 1;
+        end = 5;
+      } else if (currentPage >= totalPages - 2) {
+        start = totalPages - 4;
+        end = totalPages;
+      } else {
+        start = currentPage - 2;
+        end = currentPage + 2;
       }
     }
-    
+    for (let i = start; i <= end; i++) {
+      if (i > 0 && i <= totalPages) {
+        pages.push(i);
+      }
+    }
     return pages;
   };
 
@@ -54,28 +52,23 @@ const Pagination: React.FC<PaginationProps> = ({
         className="flex items-center px-3 py-2 text-sm font-medium text-ghost-white bg-dark-gray border border-dark-gray rounded-lg hover:bg-neon-cyan hover:text-space-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-orbitron"
       >
         <ChevronLeft className="h-4 w-4 mr-1" />
-        Anterior
+        <span className="hidden sm:inline">Anterior</span>
       </button>
 
       <div className="flex space-x-1">
         {getPageNumbers().map((page, index) => (
-          <React.Fragment key={index}>
-            {page === '...' ? (
-              <span className="px-3 py-2 text-gray-light font-orbitron">...</span>
-            ) : (
-              <button
-                onClick={() => onPageChange(page as number)}
-                disabled={loading}
-                className={`px-3 py-2 text-sm font-bold rounded-lg transition-colors font-orbitron ${
-                  currentPage === page
-                    ? 'bg-neon-cyan text-space-black text-glow-cyan border-neon-cyan'
-                    : 'text-ghost-white bg-dark-gray border border-dark-gray hover:bg-neon-cyan hover:text-space-black'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {page}
-              </button>
-            )}
-          </React.Fragment>
+          <button
+            key={index}
+            onClick={() => onPageChange(page)}
+            disabled={loading}
+            className={`px-3 py-2 text-sm font-bold rounded-lg transition-colors font-orbitron ${
+              currentPage === page
+                ? 'bg-neon-cyan text-space-black text-glow-cyan border-neon-cyan'
+                : 'text-ghost-white bg-dark-gray border border-dark-gray hover:bg-neon-cyan hover:text-space-black'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {page}
+          </button>
         ))}
       </div>
 
@@ -84,7 +77,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages || loading}
         className="flex items-center px-3 py-2 text-sm font-medium text-ghost-white bg-dark-gray border border-dark-gray rounded-lg hover:bg-neon-cyan hover:text-space-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-orbitron"
       >
-        Siguiente
+        <span className="hidden sm:inline">Siguiente</span>
         <ChevronRight className="h-4 w-4 ml-1" />
       </button>
     </div>
