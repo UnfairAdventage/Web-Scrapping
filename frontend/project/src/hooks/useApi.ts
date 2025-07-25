@@ -72,7 +72,7 @@ const api = {
       items,
       pagination: {
         currentPage: page,
-        totalPages: data.total_paginas || 5,
+        totalPages: 10000,
         totalItems: data.total_items || items.length * 5,
         itemsPerPage: 20
       }
