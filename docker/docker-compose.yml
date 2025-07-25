@@ -44,7 +44,7 @@ services:
     
     # Etiquetas para CasaOS
     labels:
-      - "icon=https://icon.casaos.io/main/all/anxerstudios-streaming.png"
+      - "https://github.com/UnfairAdventage/Web-Scrapping/blob/main/frontend/project/public/icono.png?raw=true"
       - "casaos.description=AnxerStudios Streaming - Plataforma de streaming de películas y series"
       - "casaos.category=Entertainment"
 
