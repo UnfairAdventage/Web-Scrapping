@@ -7,11 +7,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from config import TARGET_URLS, get_random_headers
+from config import TARGET_URLS, get_random_headers, get_random_header_search
 from backend.utils.http_client import fetch_html
 from backend.extractors.generic_extractor import extraer_listado, extraer_info_pelicula
 from backend.extractors.serie_extractor import extraer_episodios_serie
 from backend.extractors.iframe_extractor import extraer_iframe_reproductor
+
+APP_VERSION = "1.4.0"
+GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
+GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +28,55 @@ SECCIONES_LIST = list(SECCIONES.keys())
 def normaliza(texto):
     return unicodedata.normalize('NFKD', texto).encode('ascii', 'ignore').decode('ascii').lower()
 
+def compare_versions(local, remote):
+    def parse(v):
+        return [int(x) for x in v.strip().split('.')]
+    l, r = parse(local), parse(remote)
+    for lv, rv in zip(l, r):
+        if lv < rv:
+            return -1
+        elif lv > rv:
+            return 1
+    if len(l) < len(r):
+        return -1
+    if len(l) > len(r):
+        return 1
+    return 0
+
+@app.route('/api/version', methods=['GET'])
+def api_version():
+    try:
+        remote_version = requests.get(GITHUB_VERSION_URL, timeout=5).text.strip()
+    except Exception as e:
+        return jsonify({"error": f"No se pudo obtener la versión remota: {e}", "version": APP_VERSION}), 200
+    cmp = compare_versions(APP_VERSION, remote_version)
+    if cmp < 0:
+        return jsonify({
+            "version": APP_VERSION,
+            "latest_version": remote_version,
+            "update_available": True,
+            "changes": None
+        })
+    elif cmp == 0:
+        # Si está actualizado, obtener los cambios
+        try:
+            changes = requests.get(GITHUB_CHANGES_URL, timeout=5).text
+        except Exception as e:
+            changes = None
+        return jsonify({
+            "version": APP_VERSION,
+            "latest_version": remote_version,
+            "update_available": False,
+            "changes": changes
+        })
+    else:
+        return jsonify({
+            "version": APP_VERSION,
+            "latest_version": remote_version,
+            "update_available": False,
+            "changes": None
+        })
+
 @app.route('/api/secciones', methods=['GET'])
 def api_secciones():
     return jsonify({"secciones": SECCIONES_LIST})
@@ -35,7 +88,7 @@ def api_listado():
         query = busqueda.strip()
         url = f"https://sololatino.net/wp-json/dooplay/search/?keyword={query}&nonce=84428a202e"
         try:
-            resp = requests.get(url, headers=get_random_headers(), timeout=10)
+            resp = requests.get(url, headers=get_random_header_search(), timeout=10)
             resp.raise_for_status()
             data = resp.json()
             items = []

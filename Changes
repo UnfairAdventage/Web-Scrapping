@@ -1,0 +1,14 @@
+# Changes
+
+## 1.4.0 (2025-07-24)
+
+### Added
+
+- Added `useDeepSearchCatalog` hook
+- Added `DeepSearchCatalog` component
+- Added `DeepSearchCatalogPage` page
+
+### Changed
+
+- Updated `CatalogPage` page to use `DeepSearchCatalog` component
+- Updated `CatalogGrid` component to use `DeepSearchCatalog` component
