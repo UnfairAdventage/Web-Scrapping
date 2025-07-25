@@ -1,13 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 from backend.utils.adblocker import clean_html_ads
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from config import get_random_headers
 
 
 def extraer_iframe_reproductor(url):
-    cabeceras = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-    }
-    respuesta = requests.get(url, headers=cabeceras)
+    respuesta = requests.get(url, headers=get_random_headers())
     if not respuesta.ok:
         print(f"❌ Error al acceder a: {url}")
         return None

@@ -1,9 +1,0 @@
----
-description: "**Problema:** Actualmente, la API de la aplicación ofrece información detallada y enriquecida para las películas (título, sinopsis, géneros, fecha de estreno, póster) a través del endpoint `/api/pelicula/<slug>`. Sin embargo, los endpoints para series (`/api/serie/<slug>`) y animes (`/api/anime/<slug>`) devuelven datos mucho más limitados, principalmente la sinopsis, el título y la lista de episodios, careciendo de metadatos clave como los géneros o una imagen de póster principal. **Objetivo:** El objetivo de este plan es alcanzar la paridad de características en la información proporcionada por la API para todos los tipos de contenido. Se refactorizará el backend para que extraiga los metadatos faltantes (géneros, imagen de póster, año) para series y animes, y se actualizará el frontend para consumir y mostrar esta información, eliminando los datos de relleno (placeholders) y mejorando la experiencia del usuario. **Resultado Esperado:** Una interfaz de usuario más consistente y profesional, donde las páginas de detalle de series y animes muestren la misma calidad de información que las páginas de películas."
-globs:
-- 'backend/extractors/serie_extractor.py'
-- 'backend/extractors/generic_extractor.py'
-- 'backend/app.py'
-- 'frontend/project/src/hooks/useApi.ts'
-alwaysApply: true
----

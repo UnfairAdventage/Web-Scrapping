@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from config import TARGET_URLS
+from config import TARGET_URLS, get_random_headers
 from backend.utils.http_client import fetch_html
 from backend.extractors.generic_extractor import extraer_listado, extraer_info_pelicula
 from backend.extractors.serie_extractor import extraer_episodios_serie
@@ -35,7 +35,7 @@ def api_listado():
         query = busqueda.strip()
         url = f"https://sololatino.net/wp-json/dooplay/search/?keyword={query}&nonce=84428a202e"
         try:
-            resp = requests.get(url, timeout=10)
+            resp = requests.get(url, headers=get_random_headers(), timeout=10)
             resp.raise_for_status()
             data = resp.json()
             items = []
@@ -99,7 +99,7 @@ def api_deep_search():
         return jsonify({'error': 'Falta el parámetro de búsqueda'}), 400
     url = f"https://sololatino.net/?s={quote_plus(query)}"
     try:
-        resp = requests.get(url, timeout=10)
+        resp = requests.get(url, headers=get_random_headers(), timeout=10)
         resp.raise_for_status()
         html = resp.text
         resultados = extraer_listado(html)
@@ -148,8 +148,7 @@ def api_ver_pelicula(slug):
     player = extraer_iframe_reproductor(url) if url else None
     info = {}
     if url:
-        import requests
-        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
+        resp = requests.get(url, headers=get_random_headers())
         print(f"[DEBUG] Status code de requests.get (Películas): {resp.status_code}")
         if resp.ok:
             print(f"[DEBUG] HTML descargado (primeros 500 chars, Películas):\n{resp.text[:500]}")
@@ -163,8 +162,7 @@ def api_ver_pelicula(slug):
                 print(f"[DEBUG] Buscando en Peliculas de Anime: {url}")
                 player = extraer_iframe_reproductor(url)
                 if url:
-                    import requests
-                    resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"})
+                    resp = requests.get(url, headers=get_random_headers())
                     print(f"[DEBUG] Status code de requests.get (Peliculas de Anime): {resp.status_code}")
                     if resp.ok:
                         print(f"[DEBUG] HTML descargado (primeros 500 chars, Peliculas de Anime):\n{resp.text[:500]}")

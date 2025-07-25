@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { CatalogItem, Episode, PlayerData, SeriesData } from '../types';
 
-const API_BASE_URL = `http://${window.location.hostname}:1234/api`;
+const API_BASE_URL = import.meta.env.DEV
+  ? `http://${window.location.hostname}:1234/api`
+  : '/api';
 
 // Siempre usa los nombres de sección que devuelve la API
 export const fetchSections = async (): Promise<{ nombre: string }[]> => {

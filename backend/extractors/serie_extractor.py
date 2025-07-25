@@ -1,12 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from config import get_random_headers
 
 
 def extraer_episodios_serie(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-    }
-    respuesta = requests.get(url, headers=headers)
+    respuesta = requests.get(url, headers=get_random_headers())
     if not respuesta.ok:
         print(f"[ERROR] No se pudo acceder a la URL: {url}")
         return {"info": {}, "episodios": []}

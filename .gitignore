@@ -27,6 +27,10 @@ dist-ssr
 .env
 .venv
 *.txt
+*.cursorrules
+*.mdn
+.cursor
+.cursor/rules
 
 # Extras
 plan.md
