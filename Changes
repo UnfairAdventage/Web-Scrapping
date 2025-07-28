@@ -1,23 +1,30 @@
 # Changes
 
-## 1.4.2 (2025-01-27)
+## 1.4.3 (2025-07-28)
 
 ### Added
 
-- **Reproductor mejorado**: Controles de navegación integrados en el footer con sinopsis en el centro
-- **Diseño de botones moderno**: Botones redondeados que inician en gris y cambian al color de la app al hacer hover
-- **Sinopsis en footer**: Información del contenido visible durante la reproducción
-- **Iconos en botones**: ChevronLeft/ChevronRight para navegación y X para salir
+- **Detección de orientación móvil**: Hook personalizado `useOrientation` para detectar pantallas verticales en móviles
+- **Layout responsive para móviles**: PlayerPage se adapta automáticamente a orientación vertical
+- **Footer fijo en móviles**: Controles del reproductor posicionados por encima del footer del Layout
+- **Z-index jerarquizado**: Sistema de capas para evitar superposición de elementos
 
 ### Changed
 
-- **Eliminación de controles flotantes**: Mejor experiencia visual sin elementos superpuestos sobre el video
-- **Footer rediseñado**: Layout de 3 columnas con información, sinopsis y controles
-- **Transiciones mejoradas**: Efectos hover suaves con `transition-all duration-200`
-- **Estados deshabilitados**: Botones de navegación con estados apropiados para series
+- **PlayerPage overlay en móviles**: Pantalla completa con `fixed inset-0 z-50` en orientación vertical
+- **Altura del reproductor**: Cambio de `aspect-video` a `h-full` en móviles verticales
+- **Footer del Layout**: Z-index reducido (`z-30`) para estar por debajo del footer del reproductor
+- **Espaciado optimizado**: Padding y márgenes reducidos para mejor aprovechamiento del espacio
+
+### Fixed
+
+- **Espacio negro en móviles**: Eliminación completa del espacio en blanco en pantallas verticales
+- **Superposición de footers**: Resuelto el conflicto entre footer del reproductor y Layout
+- **Responsividad mejorada**: Experiencia optimizada para diferentes orientaciones de pantalla
 
 ### Technical
 
-- Reorganización del layout del PlayerPage para mejor UX
-- Implementación de controles de navegación más intuitivos
-- Mejora en la accesibilidad con estados disabled apropiados
+- Implementación de hook `useOrientation` con detección de resize y orientationchange
+- Sistema de z-index jerarquizado (reproductor: z-50, Layout footer: z-30)
+- Layout flex adaptativo para móviles verticales
+- Posicionamiento fijo inteligente para controles del reproductor
