@@ -7,15 +7,11 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from config import TARGET_URLS, get_random_headers, get_random_header_search
+from config import TARGET_URLS, get_random_headers, get_random_header_search, APP_VERSION, GITHUB_VERSION_URL, GITHUB_CHANGES_URL
 from backend.utils.http_client import fetch_html
 from backend.extractors.generic_extractor import extraer_listado, extraer_info_pelicula
 from backend.extractors.serie_extractor import extraer_episodios_serie
 from backend.extractors.iframe_extractor import extraer_iframe_reproductor
-
-APP_VERSION = "1.4.1"
-GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
-GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
 
 app = Flask(__name__)
 CORS(app)

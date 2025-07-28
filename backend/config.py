@@ -1,5 +1,13 @@
 import random
 
+# APP CONFIG
+
+APP_VERSION = "1.4.2"
+GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
+GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
+
+# SCRAPING CONFIG
+
 BASE_URL = "https://sololatino.net"
 
 TARGET_URLS = [
