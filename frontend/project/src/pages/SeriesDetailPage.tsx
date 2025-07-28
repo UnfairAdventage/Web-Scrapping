@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSeriesData } from '../hooks/api/series';
-import VideoModal from '../components/VideoModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Play, ArrowLeft, Calendar, Globe, Users } from 'lucide-react';
 import { Episode } from '../types';
@@ -9,14 +8,12 @@ import { Episode } from '../types';
 const SeriesDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [selectedSeason, setSelectedSeason] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
 
   const { data: seriesData, isLoading, error } = useSeriesData(slug || '');
 
   const handlePlayEpisode = (episode: Episode) => {
-    setCurrentEpisode(episode);
-    setIsModalOpen(true);
+    const episodeSlug = `${slug}-${episode.season}x${episode.episode}`;
+    window.location.href = `/ver/serie/${episodeSlug}`;
   };
 
   if (isLoading) {
@@ -113,13 +110,15 @@ const SeriesDetailPage: React.FC = () => {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => handlePlayEpisode(currentSeasonEpisodes[0])}
-              className="flex items-center bg-electric-sky text-space-black border-2 border-electric-sky text-glow-electric-sky font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-electric-sky hover:text-glow-electric-sky hover:border-electric-sky"
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Reproducir primer episodio
-            </button>
+            {currentSeasonEpisodes.length > 0 && (
+              <button
+                onClick={() => handlePlayEpisode(currentSeasonEpisodes[0])}
+                className="flex items-center bg-electric-sky text-space-black border-2 border-electric-sky text-glow-electric-sky font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-electric-sky hover:text-glow-electric-sky hover:border-electric-sky"
+              >
+                <Play className="h-5 w-5 mr-2" />
+                Reproducir primer episodio
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -184,13 +183,7 @@ const SeriesDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Video Modal */}
-      <VideoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        videoUrl={currentEpisode?.url || ''}
-        title={currentEpisode ? `${info.title} - ${currentEpisode.title}` : ''}
-      />
+
     </div>
   );
 };

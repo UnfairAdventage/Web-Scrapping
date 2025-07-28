@@ -9,6 +9,7 @@ const CatalogPage = lazy(() => import('./pages/CatalogPage'));
 const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'));
 const MovieDetailPage = lazy(() => import('./pages/MovieDetailPage'));
 const AnimeDetailPage = lazy(() => import('./pages/AnimeDetailPage'));
+const PlayerPage = lazy(() => import('./pages/PlayerPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/series/:slug" element={<SeriesDetailPage />} />
                 <Route path="/movie/:slug" element={<MovieDetailPage />} />
                 <Route path="/anime/:slug" element={<AnimeDetailPage />} />
+                <Route path="/ver/:tipo/:slug" element={<PlayerPage />} />
                 {/* <Route path="*" element={<Navigate to="/page/1" replace />} /> */}
               </Routes>
             </Suspense>

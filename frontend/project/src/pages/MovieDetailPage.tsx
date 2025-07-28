@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMoviePlayer } from '../hooks/api/movies';
-import VideoModal from '../components/VideoModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Play, ArrowLeft, Calendar, Globe, Users } from 'lucide-react';
 
 const MovieDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: playerData, isLoading, error } = useMoviePlayer(slug || '');
 
   if (isLoading || !playerData) {
@@ -45,7 +43,6 @@ const MovieDetailPage: React.FC = () => {
   const language = 'Latino';
   const poster = playerData.imagen_poster || '';
   const alt = playerData.tituloReal || '';
-  const videoUrl = playerData.player_url || '';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,24 +88,18 @@ const MovieDetailPage: React.FC = () => {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => setIsModalOpen(true)}
+            <Link
+              to={`/ver/pelicula/${slug}`}
               className="flex items-center bg-fuchsia-pink text-space-black border-2 border-fuchsia-pink text-glow-fuchsia-pink font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-fuchsia-pink hover:text-glow-fuchsia-pink hover:border-fuchsia-pink"
             >
               <Play className="h-5 w-5 mr-2" />
               Reproducir película
-            </button>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Video Modal */}
-      <VideoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        videoUrl={videoUrl}
-        title={title}
-      />
+
     </div>
   );
 };

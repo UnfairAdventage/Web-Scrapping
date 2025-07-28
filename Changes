@@ -1,27 +1,23 @@
 # Changes
 
-## 1.4.1 (2025-07-27)
+## 1.4.2 (2025-01-27)
 
 ### Added
 
-- **Reorganización completa de hooks**: Nueva estructura modular y organizada
-- **Hooks de API separados por dominio**: `catalog`, `search`, `series`, `movies`, `anime`
-- **Hooks de UI**: `useModal`, `usePagination` con variantes especializadas
-- **Hooks utilitarios**: `useDebounce`, `useLocalStorage` con tipos TypeScript
-- **Cliente API centralizado**: `api-client.ts` con configuración base y manejo de errores
-- **Documentación completa**: README de hooks con estructura, uso y ejemplos
+- **Reproductor mejorado**: Controles de navegación integrados en el footer con sinopsis en el centro
+- **Diseño de botones moderno**: Botones redondeados que inician en gris y cambian al color de la app al hacer hover
+- **Sinopsis en footer**: Información del contenido visible durante la reproducción
+- **Iconos en botones**: ChevronLeft/ChevronRight para navegación y X para salir
 
 ### Changed
 
-- **Estructura de hooks reorganizada**: Separación por responsabilidades (api/, ui/, utils/)
-- **Imports actualizados**: Todos los componentes ahora usan la nueva estructura
-- **Mejor mantenibilidad**: Código más organizado y escalable
-- **Performance mejorada**: Tree-shaking optimizado e imports específicos
-- **Compatibilidad mantenida**: Migración gradual sin romper funcionalidad
+- **Eliminación de controles flotantes**: Mejor experiencia visual sin elementos superpuestos sobre el video
+- **Footer rediseñado**: Layout de 3 columnas con información, sinopsis y controles
+- **Transiciones mejoradas**: Efectos hover suaves con `transition-all duration-200`
+- **Estados deshabilitados**: Botones de navegación con estados apropiados para series
 
 ### Technical
 
-- Separación de lógica de API de lógica de UI
-- Implementación de patrones consistentes para hooks
-- Documentación JSDoc en todos los hooks
-- Configuraciones de staleTime optimizadas por tipo de dato
+- Reorganización del layout del PlayerPage para mejor UX
+- Implementación de controles de navegación más intuitivos
+- Mejora en la accesibilidad con estados disabled apropiados

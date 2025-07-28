@@ -5,7 +5,6 @@ import { useDeepSearchCatalog } from '../hooks/api/search';
 import CatalogGrid from '../components/CatalogGrid';
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { AlertCircle } from 'lucide-react';
 
 interface CatalogPageProps {

@@ -10,6 +10,7 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 - **Paginación con rutas limpias**: ahora la navegación entre páginas usa URLs tipo `/page/2` en vez de parámetros de query (`?page=2`)
 - **Paridad de metadatos:** Ahora las páginas de detalle de series y animes muestran géneros, póster y año igual que las películas
 - **Hooks organizados modularmente**: Estructura separada por dominio (API, UI, utils) para mejor mantenibilidad
+- **Reproductor mejorado**: Controles de navegación integrados en el footer con sinopsis y botones redondeados
 - Filtrado y búsqueda en el catálogo
 - Visualización de detalles y sinopsis
 - Modal de reproducción de video (streaming)
@@ -23,10 +24,15 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 - Página principal: `http://localhost:1234/page/1`
 - Página 2 del catálogo: `http://localhost:1234/page/2`
 - Filtros y búsqueda: `http://localhost:1234/page/2?search=accion&section=Películas`
+- Reproductor de película: `http://localhost:1234/ver/pelicula/nombre-pelicula`
+- Reproductor de serie: `http://localhost:1234/ver/serie/nombre-serie-1x1`
 
 ## Cambios recientes importantes
 
-- **¡Nuevo!** Reorganización completa de hooks: Estructura modular separada por dominio (API, UI, utils) para mejor mantenibilidad y escalabilidad.
+- **¡Nuevo!** Reproductor mejorado: Controles de navegación integrados en el footer con sinopsis en el centro y botones redondeados con efectos hover
+- **¡Nuevo!** Eliminación de controles flotantes: Mejor experiencia visual sin elementos superpuestos sobre el video
+- **¡Nuevo!** Diseño de botones moderno: Botones redondeados que inician en gris y cambian al color de la app al hacer hover
+- Reorganización completa de hooks: Estructura modular separada por dominio (API, UI, utils) para mejor mantenibilidad y escalabilidad.
 - La paginación ahora utiliza rutas limpias (`/page/2`) para mejor compatibilidad y SEO.
 - El backend Flask sirve el frontend como SPA, permitiendo navegación directa a cualquier ruta.
 - Cada ítem del catálogo ahora incluye un campo `url` generado automáticamente.

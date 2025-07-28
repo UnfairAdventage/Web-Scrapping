@@ -104,7 +104,6 @@ def api_listado():
                             "alt": v.get("title", ""),
                             "image": v.get("img", ""),
                             "year": v.get("extra", {}).get("date", ""),
-                            "genres": "",
                             "language": "Latino",
                             "type": tipo
                         })
