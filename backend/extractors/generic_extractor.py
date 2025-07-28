@@ -14,7 +14,7 @@ def extraer_listado(html):
             titulo = poster.select_one('h3').text.strip() if poster.select_one('h3') else ''
             imagen = poster.select_one('img').get('data-srcset', '')
             alt = poster.select_one('img').get('alt', '')
-            anio = poster.select_one('.data p').text.strip() if poster.select_one('.data p') else ''
+            year = poster.select_one('.data p').text.strip() if poster.select_one('.data p') else ''
             generos = poster.select_one('.data span').text.strip() if poster.select_one('.data span') else ''
             idioma = 'Latino' if poster.select_one('.audio .latino') else 'Otro'
             tipo = 'pelicula' if 'movies' in articulo.get('class', []) else 'serie' if 'tvshows' in articulo.get('class', []) else 'Otro'
@@ -24,7 +24,7 @@ def extraer_listado(html):
                 "titulo": titulo,
                 "alt": alt,
                 "imagen": imagen,
-                "anio": anio,
+                "year": year,
                 "generos": generos,
                 "idioma": idioma,
                 "tipo": tipo,

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Loader2, AlertCircle } from 'lucide-react';
-import { usePlayerData } from '../hooks';
+import { usePlayerData } from '../hooks/api/movies';
 
 interface VideoModalProps {
   isOpen: boolean;

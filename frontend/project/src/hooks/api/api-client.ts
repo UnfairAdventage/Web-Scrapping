@@ -29,22 +29,20 @@ export const apiClient = {
    * Realiza una petición GET a la API
    */
   async get<T>(endpoint: string, params?: Record<string, string | number>): Promise<T> {
-    const url = new URL(`${API_BASE_URL}${endpoint}`);
-    
+    let url = `${API_BASE_URL}${endpoint}`;
     if (params) {
+      const search = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          url.searchParams.append(key, String(value));
+          search.append(key, String(value));
         }
       });
+      url += `?${search.toString()}`;
     }
-
-    const response = await fetch(url.toString());
-    
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} - ${response.statusText}`);
     }
-    
     return response.json();
   },
 
@@ -52,17 +50,17 @@ export const apiClient = {
    * Construye una URL con parámetros de consulta
    */
   buildUrl(endpoint: string, params?: Record<string, string | number>): string {
-    const url = new URL(`${API_BASE_URL}${endpoint}`);
-    
+    let url = `${API_BASE_URL}${endpoint}`;
     if (params) {
+      const search = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          url.searchParams.append(key, String(value));
+          search.append(key, String(value));
         }
       });
+      url += `?${search.toString()}`;
     }
-    
-    return url.toString();
+    return url;
   }
 };
 
