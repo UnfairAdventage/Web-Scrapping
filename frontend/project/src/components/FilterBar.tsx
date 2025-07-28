@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, ScanSearch } from 'lucide-react';
-import { useSections } from '../hooks/useApi';
+import { useSections } from '../hooks';
 
 interface FilterBarProps {
   search: string;

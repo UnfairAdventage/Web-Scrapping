@@ -9,6 +9,7 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 - Frontend moderno con React, Vite y TailwindCSS
 - **Paginación con rutas limpias**: ahora la navegación entre páginas usa URLs tipo `/page/2` en vez de parámetros de query (`?page=2`)
 - **Paridad de metadatos:** Ahora las páginas de detalle de series y animes muestran géneros, póster y año igual que las películas
+- **Hooks organizados modularmente**: Estructura separada por dominio (API, UI, utils) para mejor mantenibilidad
 - Filtrado y búsqueda en el catálogo
 - Visualización de detalles y sinopsis
 - Modal de reproducción de video (streaming)
@@ -25,10 +26,11 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 
 ## Cambios recientes importantes
 
+- **¡Nuevo!** Reorganización completa de hooks: Estructura modular separada por dominio (API, UI, utils) para mejor mantenibilidad y escalabilidad.
 - La paginación ahora utiliza rutas limpias (`/page/2`) para mejor compatibilidad y SEO.
 - El backend Flask sirve el frontend como SPA, permitiendo navegación directa a cualquier ruta.
 - Cada ítem del catálogo ahora incluye un campo `url` generado automáticamente.
-- **¡Nuevo!** Los endpoints de series (`/api/serie/<slug>`) y animes (`/api/anime/<slug>`) ahora devuelven metadatos enriquecidos: géneros, imagen de póster, año/fecha de estreno y sinopsis, igualando la calidad de información de las películas.
+- Los endpoints de series (`/api/serie/<slug>`) y animes (`/api/anime/<slug>`) ahora devuelven metadatos enriquecidos: géneros, imagen de póster, año/fecha de estreno y sinopsis, igualando la calidad de información de las películas.
 
 ## Requisitos
 
@@ -89,7 +91,14 @@ Web-Scrapping/
 │   └── extractors/
 ├── frontend/
 │   ├── project/  # Código fuente React
-│   └── dist/     # Build generado por Vite
+│   │   ├── src/
+│   │   │   ├── hooks/     # Hooks organizados por dominio
+│   │   │   │   ├── api/   # Hooks de API (catalog, search, etc.)
+│   │   │   │   ├── ui/    # Hooks de interfaz (modal, pagination)
+│   │   │   │   └── utils/ # Hooks utilitarios (debounce, localStorage)
+│   │   │   ├── components/
+│   │   │   └── pages/
+│   │   └── dist/     # Build generado por Vite
 ├── docker/
 │   ├── Dockerfile
 │   ├── docker-compose.yml

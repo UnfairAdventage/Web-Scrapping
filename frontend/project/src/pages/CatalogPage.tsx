@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
-import { useCatalog, useDeepSearchCatalog } from '../hooks/useApi';
+import { useCatalog, useDeepSearchCatalog } from '../hooks';
 import CatalogGrid from '../components/CatalogGrid';
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';

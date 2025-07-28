@@ -13,7 +13,7 @@ from backend.extractors.generic_extractor import extraer_listado, extraer_info_p
 from backend.extractors.serie_extractor import extraer_episodios_serie
 from backend.extractors.iframe_extractor import extraer_iframe_reproductor
 
-APP_VERSION = "1.4.0"
+APP_VERSION = "1.4.1"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
 GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
 

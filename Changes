@@ -1,14 +1,27 @@
 # Changes
 
-## 1.4.0 (2025-07-24)
+## 1.4.1 (2025-07-27)
 
 ### Added
 
-- Added `useDeepSearchCatalog` hook
-- Added `DeepSearchCatalog` component
-- Added `DeepSearchCatalogPage` page
+- **Reorganización completa de hooks**: Nueva estructura modular y organizada
+- **Hooks de API separados por dominio**: `catalog`, `search`, `series`, `movies`, `anime`
+- **Hooks de UI**: `useModal`, `usePagination` con variantes especializadas
+- **Hooks utilitarios**: `useDebounce`, `useLocalStorage` con tipos TypeScript
+- **Cliente API centralizado**: `api-client.ts` con configuración base y manejo de errores
+- **Documentación completa**: README de hooks con estructura, uso y ejemplos
 
 ### Changed
 
-- Updated `CatalogPage` page to use `DeepSearchCatalog` component
-- Updated `CatalogGrid` component to use `DeepSearchCatalog` component
+- **Estructura de hooks reorganizada**: Separación por responsabilidades (api/, ui/, utils/)
+- **Imports actualizados**: Todos los componentes ahora usan la nueva estructura
+- **Mejor mantenibilidad**: Código más organizado y escalable
+- **Performance mejorada**: Tree-shaking optimizado e imports específicos
+- **Compatibilidad mantenida**: Migración gradual sin romper funcionalidad
+
+### Technical
+
+- Separación de lógica de API de lógica de UI
+- Implementación de patrones consistentes para hooks
+- Documentación JSDoc en todos los hooks
+- Configuraciones de staleTime optimizadas por tipo de dato

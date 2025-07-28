@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useAnimeData } from '../hooks/useApi';
+import { useAnimeData } from '../hooks';
 import VideoModal from '../components/VideoModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Play, ArrowLeft, Calendar, Globe, Users } from 'lucide-react';
