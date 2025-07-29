@@ -82,4 +82,20 @@ export const useAnimeData = (slug: string) => {
     enabled: !!slug,
     staleTime: 10 * 60 * 1000, // 10 minutos
   });
+};
+
+// Hook para cachear datos de animes y evitar fetches duplicados
+export const useCachedAnimeData = (slug: string, passedData?: any) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['anime', slug],
+    queryFn: () => animeApi.getAnimeData(slug),
+    enabled: !!slug && !passedData, // Solo hacer fetch si no hay datos pasados
+    staleTime: 10 * 60 * 1000, // 10 minutos
+  });
+
+  return {
+    data: passedData || data,
+    isLoading: !passedData && isLoading,
+    error: !passedData && error
+  };
 }; 

@@ -82,4 +82,20 @@ export const useSeriesData = (slug: string) => {
     enabled: !!slug,
     staleTime: 10 * 60 * 1000, // 10 minutos
   });
+};
+
+// Hook para cachear datos de series y evitar fetches duplicados
+export const useCachedSeriesData = (slug: string, passedData?: any) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['series', slug],
+    queryFn: () => seriesApi.getSeriesData(slug),
+    enabled: !!slug && !passedData, // Solo hacer fetch si no hay datos pasados
+    staleTime: 10 * 60 * 1000, // 10 minutos
+  });
+
+  return {
+    data: passedData || data,
+    isLoading: !passedData && isLoading,
+    error: !passedData && error
+  };
 }; 

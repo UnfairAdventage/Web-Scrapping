@@ -2,7 +2,7 @@ import random
 
 # APP CONFIG
 
-APP_VERSION = "1.4.4"
+APP_VERSION = "1.4.5"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
 GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
 

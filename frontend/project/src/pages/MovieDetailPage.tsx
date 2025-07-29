@@ -90,6 +90,7 @@ const MovieDetailPage: React.FC = () => {
           <div className="flex flex-wrap gap-4">
             <Link
               to={`/ver/pelicula/${slug}`}
+              state={{ movieData: playerData }}
               className="flex items-center bg-fuchsia-pink text-space-black border-2 border-fuchsia-pink text-glow-fuchsia-pink font-orbitron px-6 py-3 rounded-lg font-bold transition-colors shadow-md hover:bg-space-black hover:text-fuchsia-pink hover:text-glow-fuchsia-pink hover:border-fuchsia-pink"
             >
               <Play className="h-5 w-5 mr-2" />

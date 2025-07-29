@@ -36,19 +36,22 @@ export const moviesApi = {
    * Obtiene datos del reproductor de una película
    */
   async getMoviePlayer(slug: string): Promise<MoviePlayerResponse> {
-    const data = await apiClient.get<MovieApiResponse>(`/pelicula/${slug}`);
-    const player = data.player || data;
+    const data = await apiClient.get<any>(`/pelicula/${slug}`);
     
-    // Adaptar a los nuevos campos del backend
+    // La respuesta del API tiene esta estructura:
+    // { encontrado_en, info: { titulo, sinopsis, ... }, player: { player_url, ... } }
+    const player = data.player || {};
+    const info = data.info || {};
+    
     return {
-      player_url: player.player_url,
-      source: player.source,
-      format: player.format,
-      sinopsis: data.info?.sinopsis || '',
-      tituloReal: data.info?.titulo || '',
-      fecha_estreno: data.info?.fecha_estreno || '',
-      generos: data.info?.generos || [],
-      imagen_poster: data.info?.imagen_poster || ''
+      player_url: player.player_url || '',
+      source: player.source || '',
+      format: player.format || '',
+      sinopsis: info.sinopsis || '',
+      tituloReal: info.titulo || '',
+      fecha_estreno: info.fecha_estreno || '',
+      generos: info.generos || [],
+      imagen_poster: info.imagen_poster || ''
     };
   },
 
@@ -75,6 +78,22 @@ export const useMoviePlayer = (slug: string, type?: 'movie' | 'anime' | 'series'
     enabled: !!slug,
     staleTime: 15 * 60 * 1000, // 15 minutos
   });
+};
+
+// Hook para cachear datos de películas y evitar fetches duplicados
+export const useCachedMovieData = (slug: string, passedData?: any) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['movie-player', slug],
+    queryFn: () => moviesApi.getMoviePlayer(slug),
+    enabled: !!slug && !passedData, // Solo hacer fetch si no hay datos pasados
+    staleTime: 15 * 60 * 1000, // 15 minutos
+  });
+
+  return {
+    data: passedData || data,
+    isLoading: !passedData && isLoading,
+    error: !passedData && error
+  };
 };
 
 export const usePlayerData = (url: string) => {

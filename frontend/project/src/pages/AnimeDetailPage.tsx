@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAnimeData } from '../hooks/api/anime';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Play, ArrowLeft, Calendar, Globe, Users } from 'lucide-react';
@@ -7,13 +7,19 @@ import { Episode } from '../types';
 
 const AnimeDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [selectedSeason, setSelectedSeason] = useState(1);
 
   const { data: animeData, isLoading, error } = useAnimeData(slug || '');
 
   const handlePlayEpisode = (episode: Episode) => {
     const episodeSlug = `${slug}-${episode.season}x${episode.episode}`;
-    window.location.href = `/ver/anime/${episodeSlug}`;
+    navigate(`/ver/anime/${episodeSlug}`, { 
+      state: { 
+        animeData: animeData,
+        currentEpisode: episode 
+      } 
+    });
   };
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useMoviePlayer, useSeriesData, usePlayerData, useAnimeData } from '../hooks';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { useMoviePlayer, useSeriesData, usePlayerData, useAnimeData, useCachedMovieData, useCachedSeriesData, useCachedAnimeData } from '../hooks';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Episode } from '../types';
@@ -37,10 +37,17 @@ const useOrientation = () => {
 const PlayerPage: React.FC<PlayerPageProps> = () => {
   const { tipo, slug } = useParams<{ tipo: string; slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
   const [_, setSelectedSeason] = useState(1);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { isMobilePortrait } = useOrientation();
+
+  // Obtener datos pasados por el estado de navegación (si existen)
+  const passedMovieData = location.state?.movieData;
+  const passedSeriesData = location.state?.seriesData;
+  const passedAnimeData = location.state?.animeData;
+  const passedCurrentEpisode = location.state?.currentEpisode;
 
   // Parsear slug para series y animes (formato: nombre-temporada-episodio)
   const parseSeriesSlug = (slug: string) => {
@@ -63,23 +70,25 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
   const seriesInfo = (isSeries || isAnime) ? parseSeriesSlug(slug || '') : null;
   const seriesSlug = seriesInfo?.seriesSlug || slug;
 
-  // Hooks para obtener datos
-  const { data: movieData, isLoading: movieLoading, error: movieError } = useMoviePlayer(
+  // Hooks para obtener datos usando cache optimizado
+  const { data: finalMovieData, isLoading: finalMovieLoading, error: finalMovieError } = useCachedMovieData(
     isMovie ? (slug || '') : '',
-    isMovie ? 'movie' : undefined
+    passedMovieData
   );
 
-  const { data: seriesData, isLoading: seriesLoading, error: seriesError } = useSeriesData(
-    isSeries ? (seriesSlug || '') : ''
+  const { data: seriesData, isLoading: seriesLoading, error: seriesError } = useCachedSeriesData(
+    isSeries ? (seriesSlug || '') : '',
+    passedSeriesData
   );
 
-  const { data: animeData, isLoading: animeLoading, error: animeError } = useAnimeData(
-    isAnime ? (seriesSlug || '') : ''
+  const { data: animeData, isLoading: animeLoading, error: animeError } = useCachedAnimeData(
+    isAnime ? (seriesSlug || '') : '',
+    passedAnimeData
   );
 
   // Determinar qué datos usar
-  const isLoading = isMovie ? movieLoading : (isSeries ? seriesLoading : animeLoading);
-  const error = isMovie ? movieError : (isSeries ? seriesError : animeError);
+  const isLoading = isMovie ? finalMovieLoading : (isSeries ? seriesLoading : animeLoading);
+  const error = isMovie ? finalMovieError : (isSeries ? seriesError : animeError);
   
   // Obtener datos específicos según el tipo
   const currentSeriesData = isSeries ? seriesData : null;
@@ -89,19 +98,26 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
   // Encontrar el episodio actual para series y animes
   useEffect(() => {
     if ((isSeries || isAnime) && data && seriesInfo) {
-      const episode = data.episodes.find(
-        (ep: Episode) => ep.season === seriesInfo.season && ep.episode === seriesInfo.episode
-      );
-      if (episode) {
-        setCurrentEpisode(episode);
-        setSelectedSeason(seriesInfo.season);
+      // Si tenemos el episodio pasado por navegación, usarlo
+      if (passedCurrentEpisode) {
+        setCurrentEpisode(passedCurrentEpisode);
+        setSelectedSeason(passedCurrentEpisode.season);
+      } else {
+        // Buscar el episodio en los datos
+        const episode = data.episodes.find(
+          (ep: Episode) => ep.season === seriesInfo.season && ep.episode === seriesInfo.episode
+        );
+        if (episode) {
+          setCurrentEpisode(episode);
+          setSelectedSeason(seriesInfo.season);
+        }
       }
     }
-  }, [isSeries, isAnime, data, seriesInfo]);
+  }, [isSeries, isAnime, data, seriesInfo, passedCurrentEpisode]);
 
   // Obtener datos del reproductor
   const videoUrl = isMovie 
-    ? (movieData?.player_url || '')
+    ? (finalMovieData?.player_url || '')
     : (currentEpisode?.url || '');
 
   // Para películas, usar directamente la URL del iframe
@@ -112,7 +128,7 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
 
   // Determinar la URL final del iframe
   const iframeUrl = isMovie 
-    ? (movieData?.player_url || '')
+    ? (finalMovieData?.player_url || '')
     : (playerData?.player_url || '');
 
   // Limpiar anuncios del iframe
@@ -184,7 +200,7 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
     );
   }
 
-  if (error || !data) {
+  if (error || (isMovie ? !finalMovieData : !data)) {
     return (
       <div className="min-h-screen bg-space-black flex items-center justify-center">
         <div className="text-center">
@@ -205,26 +221,26 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
 
   // Extraer información del contenido
   const title = isMovie 
-    ? (movieData?.tituloReal || '')
+    ? (finalMovieData?.tituloReal || '')
     : (data?.info?.title || '');
   
   const episodeTitle = currentEpisode ? ` - ${currentEpisode.title}` : '';
   const fullTitle = `${title}${episodeTitle}`;
 
   const sinopsis = isMovie 
-    ? (movieData?.sinopsis || '')
+    ? (finalMovieData?.sinopsis || '')
     : (data?.info?.sinopsis || '');
 
   const year = isMovie 
-    ? (movieData?.fecha_estreno || '')
+    ? (finalMovieData?.fecha_estreno || '')
     : (data?.info?.year || '');
 
   const genres = isMovie 
-    ? (Array.isArray(movieData?.generos) ? movieData.generos.join(', ') : '')
+    ? (Array.isArray(finalMovieData?.generos) ? finalMovieData.generos.join(', ') : '')
     : (Array.isArray(data?.info?.genres) ? data.info.genres.join(', ') : '');
 
   const poster = isMovie 
-    ? (movieData?.imagen_poster || '')
+    ? (finalMovieData?.imagen_poster || '')
     : (data?.info?.image || '');
 
   return (
