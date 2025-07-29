@@ -1,30 +1,31 @@
 # Changes
 
-## 1.4.3 (2025-07-28)
+## 1.4.4 (29-07-2025)
 
 ### Added
 
-- **Detección de orientación móvil**: Hook personalizado `useOrientation` para detectar pantallas verticales en móviles
-- **Layout responsive para móviles**: PlayerPage se adapta automáticamente a orientación vertical
-- **Footer fijo en móviles**: Controles del reproductor posicionados por encima del footer del Layout
-- **Z-index jerarquizado**: Sistema de capas para evitar superposición de elementos
+- **Soporte completo para animes**: Diferenciación independiente entre animes y series
+- **Hook useAnimeData**: Integración del hook específico para datos de anime
+- **Rutas específicas para animes**: Sistema de rutas `/ver/anime/` separado de `/ver/serie/`
+- **Navegación independiente**: Animes y series ahora son completamente independientes
 
 ### Changed
 
-- **PlayerPage overlay en móviles**: Pantalla completa con `fixed inset-0 z-50` en orientación vertical
-- **Altura del reproductor**: Cambio de `aspect-video` a `h-full` en móviles verticales
-- **Footer del Layout**: Z-index reducido (`z-30`) para estar por debajo del footer del reproductor
-- **Espaciado optimizado**: Padding y márgenes reducidos para mejor aprovechamiento del espacio
+- **PlayerPage mejorado**: Lógica unificada para manejar películas, series y animes
+- **Parsing de slugs unificado**: Mismo patrón para series y animes (`nombre-temporada-episodio`)
+- **API calls optimizadas**: Búsqueda correcta de animes base en lugar de episodios específicos
+- **AnimeDetailPage corregida**: Redirección a `/ver/anime/` en lugar de `/ver/serie/`
 
 ### Fixed
 
-- **Espacio negro en móviles**: Eliminación completa del espacio en blanco en pantallas verticales
-- **Superposición de footers**: Resuelto el conflicto entre footer del reproductor y Layout
-- **Responsividad mejorada**: Experiencia optimizada para diferentes orientaciones de pantalla
+- **Error 404 en animes**: Resuelto el problema de búsqueda incorrecta de episodios de anime
+- **Conflicto de nombres**: Animes y series con el mismo nombre ahora son independientes
+- **API endpoints correctos**: Animes buscan `/api/anime/slug-base` en lugar de `/api/anime/slug-episodio`
+- **Navegación entre episodios**: Funciona correctamente para animes y series por separado
 
 ### Technical
 
-- Implementación de hook `useOrientation` con detección de resize y orientationchange
-- Sistema de z-index jerarquizado (reproductor: z-50, Layout footer: z-30)
-- Layout flex adaptativo para móviles verticales
-- Posicionamiento fijo inteligente para controles del reproductor
+- Implementación de detección de tipos: `pelicula`, `serie`, `anime`
+- Sistema de hooks específicos por tipo de contenido
+- Parsing unificado de slugs para series y animes
+- Lógica de navegación adaptativa según el tipo de contenido

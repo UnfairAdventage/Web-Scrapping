@@ -13,7 +13,7 @@ const AnimeDetailPage: React.FC = () => {
 
   const handlePlayEpisode = (episode: Episode) => {
     const episodeSlug = `${slug}-${episode.season}x${episode.episode}`;
-    window.location.href = `/ver/serie/${episodeSlug}`;
+    window.location.href = `/ver/anime/${episodeSlug}`;
   };
 
   if (isLoading) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useMoviePlayer, useSeriesData, usePlayerData } from '../hooks';
+import { useMoviePlayer, useSeriesData, usePlayerData, useAnimeData } from '../hooks';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Episode } from '../types';
@@ -42,7 +42,7 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { isMobilePortrait } = useOrientation();
 
-  // Parsear slug para series (formato: nombre-temporada-episodio)
+  // Parsear slug para series y animes (formato: nombre-temporada-episodio)
   const parseSeriesSlug = (slug: string) => {
     const match = slug.match(/^(.+)-(\d+)x(\d+)$/);
     if (match) {
@@ -58,8 +58,9 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
   // Obtener datos según el tipo 
   const isMovie = tipo === 'pelicula';
   const isSeries = tipo === 'serie';
+  const isAnime = tipo === 'anime';
   
-  const seriesInfo = isSeries ? parseSeriesSlug(slug || '') : null;
+  const seriesInfo = (isSeries || isAnime) ? parseSeriesSlug(slug || '') : null;
   const seriesSlug = seriesInfo?.seriesSlug || slug;
 
   // Hooks para obtener datos
@@ -72,23 +73,31 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
     isSeries ? (seriesSlug || '') : ''
   );
 
-  // Determinar qué datos usar
-  const isLoading = isMovie ? movieLoading : seriesLoading;
-  const error = isMovie ? movieError : seriesError;
-  const data = isMovie ? movieData : seriesData;
+  const { data: animeData, isLoading: animeLoading, error: animeError } = useAnimeData(
+    isAnime ? (seriesSlug || '') : ''
+  );
 
-  // Encontrar el episodio actual para series
+  // Determinar qué datos usar
+  const isLoading = isMovie ? movieLoading : (isSeries ? seriesLoading : animeLoading);
+  const error = isMovie ? movieError : (isSeries ? seriesError : animeError);
+  
+  // Obtener datos específicos según el tipo
+  const currentSeriesData = isSeries ? seriesData : null;
+  const currentAnimeData = isAnime ? animeData : null;
+  const data = isSeries ? currentSeriesData : (isAnime ? currentAnimeData : null);
+
+  // Encontrar el episodio actual para series y animes
   useEffect(() => {
-    if (isSeries && seriesData && seriesInfo) {
-      const episode = seriesData.episodes.find(
-        ep => ep.season === seriesInfo.season && ep.episode === seriesInfo.episode
+    if ((isSeries || isAnime) && data && seriesInfo) {
+      const episode = data.episodes.find(
+        (ep: Episode) => ep.season === seriesInfo.season && ep.episode === seriesInfo.episode
       );
       if (episode) {
         setCurrentEpisode(episode);
         setSelectedSeason(seriesInfo.season);
       }
     }
-  }, [isSeries, seriesData, seriesInfo]);
+  }, [isSeries, isAnime, data, seriesInfo]);
 
   // Obtener datos del reproductor
   const videoUrl = isMovie 
@@ -96,9 +105,9 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
     : (currentEpisode?.url || '');
 
   // Para películas, usar directamente la URL del iframe
-  // Para series, usar usePlayerData para procesar la URL del episodio
+  // Para series y animes, usar usePlayerData para procesar la URL del episodio
   const { data: playerData, isLoading: playerLoading, error: playerError } = usePlayerData(
-    isMovie ? '' : videoUrl // Solo usar usePlayerData para series
+    isMovie ? '' : videoUrl // Solo usar usePlayerData para series y animes
   );
 
   // Determinar la URL final del iframe
@@ -134,23 +143,24 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
 
   // Navegación entre episodios
   const getCurrentEpisodeIndex = () => {
-    if (!seriesData || !currentEpisode) return -1;
-    return seriesData.episodes.findIndex(
-      ep => ep.season === currentEpisode.season && ep.episode === currentEpisode.episode
+    if (!data || !currentEpisode) return -1;
+    return data.episodes.findIndex(
+      (ep: Episode) => ep.season === currentEpisode.season && ep.episode === currentEpisode.episode
     );
   };
 
   const navigateToEpisode = (direction: 'prev' | 'next') => {
-    if (!seriesData) return;
+    if (!data) return;
     
     const currentIndex = getCurrentEpisodeIndex();
     if (currentIndex === -1) return;
     
     const newIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-    if (newIndex >= 0 && newIndex < seriesData.episodes.length) {
-      const newEpisode = seriesData.episodes[newIndex];
+    if (newIndex >= 0 && newIndex < data.episodes.length) {
+      const newEpisode = data.episodes[newIndex];
       const newSlug = `${seriesSlug}-${newEpisode.season}x${newEpisode.episode}`;
-      navigate(`/ver/serie/${newSlug}`);
+      const routeType = isAnime ? 'anime' : 'serie';
+      navigate(`/ver/${routeType}/${newSlug}`);
     }
   };
 
@@ -196,26 +206,26 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
   // Extraer información del contenido
   const title = isMovie 
     ? (movieData?.tituloReal || '')
-    : (seriesData?.info?.title || '');
+    : (data?.info?.title || '');
   
   const episodeTitle = currentEpisode ? ` - ${currentEpisode.title}` : '';
   const fullTitle = `${title}${episodeTitle}`;
 
   const sinopsis = isMovie 
     ? (movieData?.sinopsis || '')
-    : (seriesData?.info?.sinopsis || '');
+    : (data?.info?.sinopsis || '');
 
   const year = isMovie 
     ? (movieData?.fecha_estreno || '')
-    : (seriesData?.info?.year || '');
+    : (data?.info?.year || '');
 
   const genres = isMovie 
     ? (Array.isArray(movieData?.generos) ? movieData.generos.join(', ') : '')
-    : (Array.isArray(seriesData?.info?.genres) ? seriesData.info.genres.join(', ') : '');
+    : (Array.isArray(data?.info?.genres) ? data.info.genres.join(', ') : '');
 
   const poster = isMovie 
     ? (movieData?.imagen_poster || '')
-    : (seriesData?.info?.image || '');
+    : (data?.info?.image || '');
 
   return (
     <div className={`bg-black ${
@@ -298,7 +308,7 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
           
           {/* Botones de navegación */}
           <div className="flex justify-center md:justify-end space-x-2">
-            {isSeries && getCurrentEpisodeIndex() > 0 && (
+            {(isSeries || isAnime) && getCurrentEpisodeIndex() > 0 && (
               <button
                 onClick={() => navigateToEpisode('prev')}
                 disabled={getCurrentEpisodeIndex() <= 0}
@@ -310,10 +320,10 @@ const PlayerPage: React.FC<PlayerPageProps> = () => {
               </button>
             )}
             
-            {isSeries && getCurrentEpisodeIndex() < (seriesData?.episodes.length || 0) - 1 && (
+            {(isSeries || isAnime) && getCurrentEpisodeIndex() < (data?.episodes.length || 0) - 1 && (
               <button
                 onClick={() => navigateToEpisode('next')}
-                disabled={getCurrentEpisodeIndex() >= (seriesData?.episodes.length || 0) - 1}
+                disabled={getCurrentEpisodeIndex() >= (data?.episodes.length || 0) - 1}
                 className={`bg-gray-600 text-white rounded-full hover:bg-neon-cyan hover:text-space-black transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                   isMobilePortrait ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-xs'
                 }`}
