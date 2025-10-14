@@ -2,7 +2,7 @@ import random
 
 # APP CONFIG
 
-APP_VERSION = "1.4.5"
+APP_VERSION = "1.4.6"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/CurrentVersion"
 GITHUB_CHANGES_URL = "https://raw.githubusercontent.com/UnfairAdventage/Web-Scrapping/refs/heads/main/Changes"
 
@@ -78,3 +78,4 @@ def get_random_headers():
     headers = HEADERS_BASE.copy()
     headers["User-Agent"] = random.choice(USER_AGENTS)
     return headers
+
