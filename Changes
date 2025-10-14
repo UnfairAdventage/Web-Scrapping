@@ -1,46 +1,38 @@
 # Changes
 
-## 1.4.5 (29-07-2025)
+## 1.4.6 (30-07-2025)
 
 ### Added
 
-- **Optimización de rendimiento para películas**: Sistema de cache y paso de datos por navegación
-- **Hook useCachedMovieData**: Hook optimizado para evitar fetches duplicados de películas
-- **Optimización de rendimiento para series**: Sistema de cache y paso de datos por navegación
-- **Hook useCachedSeriesData**: Hook optimizado para evitar fetches duplicados de series
-- **Optimización de rendimiento para animes**: Sistema de cache y paso de datos por navegación
-- **Hook useCachedAnimeData**: Hook optimizado para evitar fetches duplicados de animes
-- **Paso de datos por estado de navegación**: Datos se pasan entre páginas para evitar requests duplicados
+- **Sistema de colores temático**: Implementación de esquemas de colores dinámicos para mejor experiencia visual
+- **Navegación optimizada entre episodios**: Mejoras en la navegación fluida entre episodios de series y animes
+- **Layout responsivo mejorado**: Optimizaciones específicas para dispositivos móviles y tablets
+- **Sistema de temas dinámicos**: Soporte para múltiples esquemas de color basados en el contenido
 
 ### Changed
 
-- **MovieDetailPage mejorada**: Ahora pasa datos al PlayerPage usando state de navegación
-- **SeriesDetailPage mejorada**: Ahora pasa datos al PlayerPage usando state de navegación
-- **AnimeDetailPage mejorada**: Ahora pasa datos al PlayerPage usando state de navegación
-- **PlayerPage optimizado**: Usa datos pasados por navegación cuando están disponibles
-- **Lógica de navegación mejorada**: Uso de navigate() en lugar de window.location.href
-- **Sistema de cache inteligente**: React Query mantiene datos en memoria por 10-15 minutos
+- **PlayerPage renovado**: Interfaz completamente rediseñada con mejor experiencia de usuario
+- **Navegación entre episodios**: Sistema mejorado de navegación con indicadores visuales
+- **Responsive design**: Ajustes específicos para pantallas móviles y de diferentes tamaños
+- **Sistema de colores**: Implementación de paletas de colores adaptativas
 
 ### Fixed
 
-- **Error "Contenido no encontrado" en películas**: Corregida lógica de validación en PlayerPage
-- **Fetches duplicados**: Eliminados requests innecesarios entre páginas de detalles y reproductor
-- **Carga lenta del reproductor**: Carga instantánea cuando se viene desde página de detalles
-- **Uso excesivo de ancho de banda**: Reducción significativa de requests al servidor
+- **Errores en carga de datos**: Corregidos problemas de carga y renderizado de contenido
+- **Problemas de estilos**: Solucionados conflictos de CSS y problemas de layout
+- **Compatibilidad móvil**: Mejorada la experiencia en dispositivos móviles
+- **Navegación entre episodios**: Corregidos bugs en el cambio de episodios
 
 ### Performance
 
-- **Reducción de requests**: De 2 requests a 1 request por contenido
-- **Mejor UX**: Carga instantánea cuando se navega desde detalles
-- **Menor uso de ancho de banda**: No se duplican descargas de datos
-- **Cache optimizado**: Datos se mantienen en memoria por períodos extendidos
-- **Fallback robusto**: Funciona correctamente tanto con navegación directa como desde detalles
+- **Optimización de renderizado**: Mejoras en el rendimiento de renderizado de componentes
+- **Carga más rápida**: Optimizaciones en la carga de elementos de la interfaz
+- **Mejor gestión de memoria**: Reducción del uso de memoria en dispositivos móviles
 
 ### Technical
 
-- Implementación de hooks optimizados: `useCachedMovieData`, `useCachedSeriesData`, `useCachedAnimeData`
-- Sistema de paso de datos por estado de navegación de React Router
-- Lógica de fallback para acceso directo a URLs del reproductor
-- Cache inteligente con React Query (10-15 minutos de staleTime)
-- Detección automática de datos pasados vs datos del cache
-
+- Actualización de dependencias del frontend
+- Implementación de sistema de colores CSS variables
+- Mejoras en el sistema de navegación con React Router
+- Optimizaciones específicas para dispositivos táctiles
+- Refactorización de componentes para mejor mantenibilidad

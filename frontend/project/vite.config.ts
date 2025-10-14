@@ -19,7 +19,7 @@ export default defineConfig({
         short_name: 'Stream',
         theme_color: '#ffffff',
         icons: [
-          { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icono.png', sizes: '192x192', type: 'image/png' },
         ],
       },
     }),
