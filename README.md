@@ -69,10 +69,9 @@ Aplicación web para streaming y catálogo de películas y series, con backend e
 
 ## Uso
 
-1. Ejecuta el backend:
+1. Ejecuta el backend (ruta raíz):
    ```bash
-   cd ../../backend
-   python app.py
+   python -m backend.app
    ```
 
 2. Ejecuta el frontend:
