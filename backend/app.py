@@ -8,7 +8,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from config import TARGET_URLS, get_random_headers, get_random_header_search, APP_VERSION, GITHUB_VERSION_URL, GITHUB_CHANGES_URL
-from backend.utils.http_client import fetch_html
+from backend.utils.http_client import fetch_html, fetch_json
 from backend.extractors.generic_extractor import extraer_listado, extraer_info_pelicula
 from backend.extractors.serie_extractor import extraer_episodios_serie
 from backend.extractors.iframe_extractor import extraer_iframe_reproductor
@@ -84,9 +84,10 @@ def api_listado():
         query = busqueda.strip()
         url = f"https://sololatino.net/wp-json/dooplay/search/?keyword={query}&nonce=84428a202e"
         try:
-            resp = requests.get(url, headers=get_random_header_search(), timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
+            data = fetch_json(url)
+            if data is None:
+                return jsonify({"error": "No se pudo obtener respuesta de búsqueda"}), 503
+            
             items = []
             if isinstance(data, dict):
                 for k, v in data.items():
@@ -147,9 +148,9 @@ def api_deep_search():
         return jsonify({'error': 'Falta el parámetro de búsqueda'}), 400
     url = f"https://sololatino.net/?s={quote_plus(query)}"
     try:
-        resp = requests.get(url, headers=get_random_headers(), timeout=10)
-        resp.raise_for_status()
-        html = resp.text
+        html = fetch_html(url)
+        if not html:
+            return jsonify({'error': 'No se pudo obtener resultados de búsqueda profunda'}), 503
         resultados = extraer_listado(html)
         return jsonify(resultados)
     except Exception as e:
@@ -196,11 +197,10 @@ def api_ver_pelicula(slug):
     player = extraer_iframe_reproductor(url) if url else None
     info = {}
     if url:
-        resp = requests.get(url, headers=get_random_headers())
-        print(f"[DEBUG] Status code de requests.get (Películas): {resp.status_code}")
-        if resp.ok:
-            print(f"[DEBUG] HTML descargado (primeros 500 chars, Películas):\n{resp.text[:500]}")
-            info = extraer_info_pelicula(resp.text)
+        html = fetch_html(url)
+        if html:
+            print(f"[DEBUG] HTML descargado (primeros 500 chars, Películas):\n{html[:500]}")
+            info = extraer_info_pelicula(html)
     if player:
         encontrado_en = "peliculas"
     if not player:
@@ -210,11 +210,10 @@ def api_ver_pelicula(slug):
                 print(f"[DEBUG] Buscando en Peliculas de Anime: {url}")
                 player = extraer_iframe_reproductor(url)
                 if url:
-                    resp = requests.get(url, headers=get_random_headers())
-                    print(f"[DEBUG] Status code de requests.get (Peliculas de Anime): {resp.status_code}")
-                    if resp.ok:
-                        print(f"[DEBUG] HTML descargado (primeros 500 chars, Peliculas de Anime):\n{resp.text[:500]}")
-                        info = extraer_info_pelicula(resp.text)
+                    html = fetch_html(url)
+                    if html:
+                        print(f"[DEBUG] HTML descargado (primeros 500 chars, Peliculas de Anime):\n{html[:500]}")
+                        info = extraer_info_pelicula(html)
                 if player:
                     encontrado_en = "peliculas de anime"
                     break

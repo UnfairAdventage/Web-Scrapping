@@ -323,17 +323,27 @@ const PlayerPage: React.FC = () => {
       <div className={`max-w-7xl mx-auto ${
         isMobilePortrait 
           ? 'flex flex-col h-full' 
-          : 'grid grid-cols-1 lg:grid-cols-3 gap-6'
+          : isMovie 
+            ? 'grid grid-cols-1 gap-6'
+            : 'grid grid-cols-1 lg:grid-cols-3 gap-6'
       }`}>
         
         {/* Columna principal: Reproductor + Info */}
-        <div className={`${isMobilePortrait ? 'flex-1 flex flex-col' : 'lg:col-span-2 space-y-6'}`}>
+        <div className={`${
+          isMobilePortrait 
+            ? 'flex-1 flex flex-col' 
+            : isMovie 
+              ? 'space-y-6'
+              : 'lg:col-span-2 space-y-6'
+        }`}>
           {/* Video Player */}
           <div className={`relative ${isMobilePortrait ? 'flex-1' : ''}`}>
             <div className={`bg-dark-gray rounded-xl overflow-hidden ${
               isMobilePortrait 
                 ? 'h-full' 
-                : 'w-full h-96 md:h-[32rem] lg:h-[40rem] xl:h-[30rem]'
+                : isMovie
+                  ? 'w-full h-[50rem]'
+                  : 'w-full h-96 md:h-[32rem] lg:h-[40rem] xl:h-[30rem]'
             }`}>
               {playerLoading ? (
                 <div className="flex items-center justify-center h-full">

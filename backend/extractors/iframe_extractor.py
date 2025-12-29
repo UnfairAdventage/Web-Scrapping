@@ -1,18 +1,14 @@
-import requests
 from bs4 import BeautifulSoup
 from backend.utils.adblocker import clean_html_ads
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from config import get_random_headers
+from backend.utils.http_client import fetch_html
 
 
 def extraer_iframe_reproductor(url):
-    respuesta = requests.get(url, headers=get_random_headers())
-    if not respuesta.ok:
+    html = fetch_html(url)
+    if not html:
         print(f"❌ Error al acceder a: {url}")
         return None
-    html_limpio = clean_html_ads(respuesta.text)
+    html_limpio = clean_html_ads(html)
     soup = BeautifulSoup(html_limpio, 'html.parser')
     iframe = soup.select_one('.dooplay_player iframe')
     if iframe and iframe.get('src'):
