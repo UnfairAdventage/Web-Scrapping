@@ -1,17 +1,12 @@
-import requests
 from bs4 import BeautifulSoup
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from config import get_random_headers
+from backend.utils.http_client import fetch_html
 
 
 def extraer_episodios_serie(url):
-    respuesta = requests.get(url, headers=get_random_headers())
-    if not respuesta.ok:
+    html = fetch_html(url)
+    if not html:
         print(f"[ERROR] No se pudo acceder a la URL: {url}")
         return {"info": {}, "episodios": []}
-    html = respuesta.text
     soup = BeautifulSoup(html, 'html.parser')
     sinopsis = soup.select_one('div[itemprop="description"].wp-content')
     sinopsis = sinopsis.text.strip() if sinopsis else ''
@@ -28,7 +23,21 @@ def extraer_episodios_serie(url):
     generos = [a.text.strip() for a in generos_div.find_all('a')] if generos_div else []
     # Extraer imagen de póster
     poster_img = soup.select_one('div.poster img')
-    imagen_poster = poster_img['src'] if poster_img and poster_img.has_attr('src') else ''
+    imagen_poster = ''
+    if poster_img:
+        imagen_poster = poster_img.get('data-src') or poster_img.get('data-lazy-src') or poster_img.get('src', '')
+        
+        # Si es placeholder, intentar noscript
+        if 'data:image' in imagen_poster:
+            noscript = soup.select_one('div.poster noscript img')
+            if noscript:
+                imagen_poster = noscript.get('src', imagen_poster)
+    
+    # Fallback a OG Tags si es necesario
+    if not imagen_poster or 'data:image' in imagen_poster:
+        og_image = soup.find('meta', property='og:image')
+        if og_image:
+            imagen_poster = og_image.get('content', imagen_poster)
     temporadas_divs = soup.select('#seasons .se-c')
     episodios_data = []
     fechas_episodios = []
@@ -44,7 +53,12 @@ def extraer_episodios_serie(url):
                 fecha = episodio.select_one('.date').text.strip() if episodio.select_one('.date') else ''
                 if fecha:
                     fechas_episodios.append(fecha)
-                imagen = episodio.select_one('img')['src'] if episodio.select_one('img') else ''
+                img_ep = episodio.select_one('img')
+                imagen = ''
+                if img_ep:
+                    imagen = img_ep.get('data-src') or img_ep.get('data-lazy-src') or img_ep.get('src', '')
+                    if 'data:image' in imagen and img_ep.get('data-src'):
+                        imagen = img_ep.get('data-src')
                 episodios_data.append({
                     "temporada": num_temporada,
                     "episodio": numero_ep,

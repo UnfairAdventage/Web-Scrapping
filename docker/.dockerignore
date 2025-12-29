@@ -4,6 +4,10 @@ FrontEnd/project/.env
 FrontEnd/project/.next
 FrontEnd/project/.cache
 FrontEnd/project/dist
+Repo
+*txt
+*.md
+*.pub
 
 # Python
 __pycache__/
